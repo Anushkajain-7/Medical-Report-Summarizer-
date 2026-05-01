@@ -2,7 +2,7 @@
 
 > End-to-end medical NLP pipeline with LSTM Seq2Seq summarization and BERT clinical NER.
 
-## 🚀 Quick Start
+## Quick Start
 
 ### 1. Start the Backend
 
@@ -50,7 +50,7 @@ Medical-report-summerizer/
     └── app.js                         # Frontend JavaScript
 ```
 
-## 🧬 Pipeline Architecture
+## Pipeline Architecture
 
 ```
 Upload (PDF/DOCX/TXT) → Extract Text → RAG Chunk → BART Summarize → BERT NER → ROUGE Evaluate
@@ -73,7 +73,7 @@ Upload (PDF/DOCX/TXT) → Extract Text → RAG Chunk → BART Summarize → BERT
 - **Pipeline**: Summarize → Extract entities from summary
 - **Output**: Raw report | Summary | Extracted entities side-by-side
 
-## ⚙️ Key Technologies
+## Key Technologies
 - **PyTorch** — LSTM Seq2Seq model
 - **HuggingFace** — BART, BERT NER via Inference API
 - **FastAPI** — REST API backend
@@ -81,7 +81,7 @@ Upload (PDF/DOCX/TXT) → Extract Text → RAG Chunk → BART Summarize → BERT
 - **PyPDF2 / python-docx** — File extraction
 - **RAG** — Sentence-boundary-aware text chunking
 
-## 🏋️ Training the LSTM
+## Training the LSTM
 
 ```bash
 cd backend
@@ -89,7 +89,7 @@ source venv/bin/activate
 python train/train_lstm.py --epochs 5 --batch_size 16 --max_samples 5000 --ablation
 ```
 
-## 📡 API Endpoints
+## API Endpoints
 
 | Endpoint | Method | Description |
 |----------|--------|-------------|
