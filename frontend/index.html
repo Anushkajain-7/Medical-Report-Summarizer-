@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MedReport AI — Clinical Report Summarizer & NER</title>
+    <meta name="description" content="AI-powered medical report summarizer with clinical NER extraction. Upload PDF, DOCX, or TXT medical reports for instant summarization and entity extraction.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="bg-grid"></div>
+    <div class="bg-glow bg-glow-1"></div>
+    <div class="bg-glow bg-glow-2"></div>
+    <div class="bg-glow bg-glow-3"></div>
+
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-brand">
+            <div class="nav-logo">
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                    <rect width="32" height="32" rx="8" fill="url(#logo-grad)"/>
+                    <path d="M16 7V25M10 16H22M12 10L16 7L20 10M12 22L16 25L20 22" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <defs><linearGradient id="logo-grad" x1="0" y1="0" x2="32" y2="32"><stop stop-color="#6366f1"/><stop offset="1" stop-color="#06b6d4"/></linearGradient></defs>
+                </svg>
+            </div>
+            <span class="nav-title">MedReport <span class="accent">AI</span></span>
+        </div>
+        <div class="nav-links">
+            <a href="#analyzer" class="nav-link active" data-section="analyzer">Analyzer</a>
+            <a href="#architecture" class="nav-link" data-section="architecture">Architecture</a>
+            <a href="#about" class="nav-link" data-section="about">About</a>
+        </div>
+        <div class="nav-status">
+            <div class="status-dot" id="statusDot"></div>
+            <span class="status-text" id="statusText">Checking...</span>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="hero" id="hero">
+        <div class="hero-content">
+            <div class="hero-badge">
+                <span class="badge-icon">🧬</span>
+                <span>End-to-End Medical NLP Pipeline</span>
+            </div>
+            <h1 class="hero-title">
+                Medical Report<br>
+                <span class="gradient-text">Summarizer & Clinical NER</span>
+            </h1>
+            <p class="hero-subtitle">
+                Upload clinical reports in <strong>PDF, DOCX, or TXT</strong> format. Our AI pipeline uses 
+                <strong>BART transformer summarization</strong> and <strong>BERT clinical NER</strong> to extract 
+                diseases, drugs, symptoms, and treatments — all in seconds.
+            </p>
+            <div class="hero-stats">
+                <div class="stat-card">
+                    <span class="stat-value">BART</span>
+                    <span class="stat-label">Summarization</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-value">BERT</span>
+                    <span class="stat-label">Clinical NER</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-value">LSTM</span>
+                    <span class="stat-label">Seq2Seq + Attn</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-value">ROUGE</span>
+                    <span class="stat-label">Evaluation</span>
+                </div>
+            </div>
+            <a href="#analyzer" class="hero-cta">
+                <span>Start Analyzing</span>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </a>
+        </div>
+    </header>
+
+    <!-- Main Analyzer Section -->
+    <main class="analyzer-section" id="analyzer">
+        <div class="section-header">
+            <h2 class="section-title">Report <span class="gradient-text">Analyzer</span></h2>
+            <p class="section-desc">Upload a medical report or paste text to get AI-powered summarization and clinical entity extraction.</p>
+        </div>
+
+        <div class="analyzer-grid">
+            <!-- Input Panel -->
+            <div class="panel input-panel">
+                <div class="panel-header">
+                    <div class="panel-title-group">
+                        <div class="panel-icon input-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>
+                        </div>
+                        <h3>Input Report</h3>
+                    </div>
+                    <div class="input-tabs">
+                        <button class="tab-btn active" id="tabText" onclick="switchTab('text')">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg>
+                            Text
+                        </button>
+                        <button class="tab-btn" id="tabFile" onclick="switchTab('file')">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+                            Upload
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Text Input -->
+                <div class="tab-content active" id="textTab">
+                    <textarea id="reportText" class="report-textarea" placeholder="Paste your medical report here...&#10;&#10;You can paste any clinical document including:&#10;• Discharge summaries&#10;• Lab reports&#10;• Consultation notes&#10;• Progress notes&#10;• Radiology reports"></textarea>
+                    <div class="char-count">
+                        <span id="charCount">0</span> characters
+                    </div>
+                </div>
+
+                <!-- File Upload -->
+                <div class="tab-content" id="fileTab">
+                    <div class="upload-zone" id="uploadZone">
+                        <div class="upload-icon-wrap">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                                <polyline points="17 8 12 3 7 8"/>
+                                <line x1="12" y1="3" x2="12" y2="15"/>
+                            </svg>
+                        </div>
+                        <p class="upload-text">Drop your file here or <span class="upload-browse">browse</span></p>
+                        <p class="upload-formats">Supports PDF, DOCX, DOC, TXT</p>
+                        <input type="file" id="fileInput" accept=".pdf,.docx,.doc,.txt" hidden>
+                    </div>
+                    <div class="file-info" id="fileInfo" style="display:none;">
+                        <div class="file-card">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg>
+                            <div class="file-details">
+                                <span class="file-name" id="fileName"></span>
+                                <span class="file-size" id="fileSize"></span>
+                            </div>
+                            <button class="file-remove" onclick="removeFile()">✕</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sample Reports -->
+                <div class="sample-section">
+                    <p class="sample-label">Or try a sample report:</p>
+                    <div class="sample-btns" id="sampleBtns">
+                        <!-- Dynamically populated -->
+                    </div>
+                </div>
+
+                <!-- Analyze Button -->
+                <button class="analyze-btn" id="analyzeBtn" onclick="analyzeReport()">
+                    <div class="btn-content">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                        <span>Analyze Report</span>
+                    </div>
+                    <div class="btn-loader" style="display:none;">
+                        <div class="spinner"></div>
+                        <span>Processing with AI...</span>
+                    </div>
+                </button>
+            </div>
+
+            <!-- Results Panel -->
+            <div class="panel results-panel" id="resultsPanel">
+                <!-- Placeholder -->
+                <div class="results-placeholder" id="resultsPlaceholder">
+                    <div class="placeholder-icon">
+                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                            <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/>
+                            <rect x="9" y="3" width="6" height="4" rx="1"/>
+                            <path d="M9 14l2 2 4-4"/>
+                        </svg>
+                    </div>
+                    <h3>Ready to Analyze</h3>
+                    <p>Upload a medical report or paste text, then click <strong>Analyze Report</strong> to see AI-powered results.</p>
+                </div>
+
+                <!-- Actual Results -->
+                <div class="results-content" id="resultsContent" style="display:none;">
+                    <!-- Summary Section -->
+                    <div class="result-card summary-card">
+                        <div class="result-header">
+                            <div class="result-title-group">
+                                <div class="result-icon summary-icon">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8"/></svg>
+                                </div>
+                                <h4>AI Summary</h4>
+                            </div>
+                            <span class="result-badge" id="summaryModel">BART</span>
+                        </div>
+                        <div class="summary-text" id="summaryText"></div>
+                        <div class="summary-meta">
+                            <span id="summaryMeta"></span>
+                        </div>
+                    </div>
+
+                    <!-- Entities Section -->
+                    <div class="result-card entities-card">
+                        <div class="result-header">
+                            <div class="result-title-group">
+                                <div class="result-icon ner-icon">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+                                </div>
+                                <h4>Clinical Entities (NER)</h4>
+                            </div>
+                            <span class="result-badge ner-badge">BERT + Keywords</span>
+                        </div>
+                        <div class="entities-grid" id="entitiesGrid">
+                            <!-- Dynamically populated -->
+                        </div>
+                    </div>
+
+                    <!-- ROUGE Scores -->
+                    <div class="result-card rouge-card">
+                        <div class="result-header">
+                            <div class="result-title-group">
+                                <div class="result-icon rouge-icon">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.21 15.89A10 10 0 118 2.83"/><path d="M22 12A10 10 0 0012 2v10z"/></svg>
+                                </div>
+                                <h4>ROUGE Evaluation</h4>
+                            </div>
+                        </div>
+                        <div class="rouge-grid" id="rougeGrid">
+                            <!-- Dynamically populated -->
+                        </div>
+                    </div>
+
+                    <!-- Raw Text Snippet -->
+                    <div class="result-card raw-card">
+                        <div class="result-header">
+                            <div class="result-title-group">
+                                <div class="result-icon raw-icon">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg>
+                                </div>
+                                <h4>Original Text (Snippet)</h4>
+                            </div>
+                            <button class="expand-btn" onclick="toggleRawText()">
+                                <span id="expandLabel">Show More</span>
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                            </button>
+                        </div>
+                        <div class="raw-text collapsed" id="rawText"></div>
+                    </div>
+
+                    <!-- Processing Info -->
+                    <div class="processing-info" id="processingInfo"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Architecture Section -->
+    <section class="architecture-section" id="architecture">
+        <div class="section-header">
+            <h2 class="section-title">System <span class="gradient-text">Architecture</span></h2>
+            <p class="section-desc">End-to-end medical NLP pipeline combining deep learning and transformer models.</p>
+        </div>
+
+        <div class="arch-grid">
+            <div class="arch-card">
+                <div class="arch-number">01</div>
+                <div class="arch-icon-wrap">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg>
+                </div>
+                <h3>File Extraction</h3>
+                <p>Upload PDF, DOCX, or TXT medical reports. Text is extracted and cleaned using PyPDF2 and python-docx parsers.</p>
+                <div class="arch-tech">PyPDF2 • python-docx</div>
+            </div>
+
+            <div class="arch-card">
+                <div class="arch-number">02</div>
+                <div class="arch-icon-wrap">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 3v18"/></svg>
+                </div>
+                <h3>RAG Chunking</h3>
+                <p>Long documents are split into overlapping chunks with sentence-boundary-aware splitting for optimal model input.</p>
+                <div class="arch-tech">Overlap: 128 tokens • Chunk: 1024</div>
+            </div>
+
+            <div class="arch-card">
+                <div class="arch-number">03</div>
+                <div class="arch-icon-wrap">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+                </div>
+                <h3>LSTM Seq2Seq</h3>
+                <p>2-layer stacked LSTM encoder-decoder with Bahdanau attention. Trained on CNN/DailyMail with teacher forcing (0.5).</p>
+                <div class="arch-tech">PyTorch • Hidden=512 • Attention</div>
+            </div>
+
+            <div class="arch-card">
+                <div class="arch-number">04</div>
+                <div class="arch-icon-wrap">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+                </div>
+                <h3>BART Summarization</h3>
+                <p>facebook/bart-large-cnn via HuggingFace Inference API for state-of-the-art abstractive summarization.</p>
+                <div class="arch-tech">HuggingFace • BART • Beam Search</div>
+            </div>
+
+            <div class="arch-card">
+                <div class="arch-number">05</div>
+                <div class="arch-icon-wrap">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+                </div>
+                <h3>Clinical NER</h3>
+                <p>BERT-based NER (dslim/bert-base-NER) + comprehensive medical keyword extraction for DISEASE, DRUG, SYMPTOM, TREATMENT.</p>
+                <div class="arch-tech">BERT NER • i2b2 • Regex</div>
+            </div>
+
+            <div class="arch-card">
+                <div class="arch-number">06</div>
+                <div class="arch-icon-wrap">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21.21 15.89A10 10 0 118 2.83"/><path d="M22 12A10 10 0 0012 2v10z"/></svg>
+                </div>
+                <h3>ROUGE Evaluation</h3>
+                <p>Automated ROUGE-1, ROUGE-2, ROUGE-L metric computation comparing generated summaries with source documents.</p>
+                <div class="arch-tech">ROUGE-1 • ROUGE-2 • ROUGE-L</div>
+            </div>
+        </div>
+
+        <!-- Pipeline Diagram -->
+        <div class="pipeline-diagram">
+            <div class="pipeline-title">Pipeline Flow</div>
+            <div class="pipeline-flow">
+                <div class="pipeline-node">
+                    <div class="node-label">📄 Upload</div>
+                    <div class="node-sub">PDF/DOCX/TXT</div>
+                </div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-node">
+                    <div class="node-label">🔤 Extract</div>
+                    <div class="node-sub">Text Parsing</div>
+                </div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-node">
+                    <div class="node-label">✂️ Chunk</div>
+                    <div class="node-sub">RAG Splitting</div>
+                </div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-node highlight-node">
+                    <div class="node-label">🤖 Summarize</div>
+                    <div class="node-sub">BART / LSTM</div>
+                </div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-node highlight-node">
+                    <div class="node-label">🏷️ NER</div>
+                    <div class="node-sub">BERT + Keywords</div>
+                </div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-node">
+                    <div class="node-label">📊 Evaluate</div>
+                    <div class="node-sub">ROUGE Scores</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="about-section" id="about">
+        <div class="section-header">
+            <h2 class="section-title">Technical <span class="gradient-text">Details</span></h2>
+        </div>
+
+        <div class="about-grid">
+            <div class="about-card">
+                <h3>🧪 DL Objective — LSTM Seq2Seq</h3>
+                <ul>
+                    <li>2-layer stacked LSTM encoder (bidirectional, hidden=512)</li>
+                    <li>Bahdanau attention between encoder states and decoder</li>
+                    <li>Teacher forcing ratio = 0.5 during training</li>
+                    <li>Adam optimizer with gradient clipping (max_norm=1.0)</li>
+                    <li>Packed sequences for variable-length inputs</li>
+                    <li>ROUGE-L target: 0.41</li>
+                    <li>Ablation: attention vs no attention comparison</li>
+                    <li>Trained on CNN/DailyMail (HuggingFace datasets)</li>
+                </ul>
+            </div>
+
+            <div class="about-card">
+                <h3>🔬 NLP Objective — Transformers + NER</h3>
+                <ul>
+                    <li>facebook/bart-large-cnn for abstractive summarization</li>
+                    <li>BART ROUGE comparison vs LSTM-attention baseline</li>
+                    <li>dslim/bert-base-NER for entity extraction</li>
+                    <li>Clinical entity categories: DISEASE, DRUG, SYMPTOM, TREATMENT</li>
+                    <li>Combined pipeline: summarize → extract entities</li>
+                    <li>Side-by-side: raw report | summary | entities</li>
+                    <li>Comprehensive keyword-based fallback NER</li>
+                </ul>
+            </div>
+
+            <div class="about-card">
+                <h3>⚙️ Key Technologies</h3>
+                <ul>
+                    <li><strong>Backend:</strong> FastAPI, Python, Uvicorn</li>
+                    <li><strong>Deep Learning:</strong> PyTorch, LSTM, Seq2Seq</li>
+                    <li><strong>Transformers:</strong> HuggingFace, BART, BERT</li>
+                    <li><strong>NER:</strong> dslim/bert-base-NER + medical dictionaries</li>
+                    <li><strong>Metrics:</strong> ROUGE-1, ROUGE-2, ROUGE-L</li>
+                    <li><strong>File Processing:</strong> PyPDF2, python-docx</li>
+                    <li><strong>RAG:</strong> Sentence-boundary-aware chunking</li>
+                    <li><strong>Frontend:</strong> Vanilla HTML/CSS/JS</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <span class="nav-title">MedReport <span class="accent">AI</span></span>
+                <p>End-to-end Medical NLP Pipeline</p>
+            </div>
+            <div class="footer-tech">
+                <span>PyTorch</span>
+                <span>•</span>
+                <span>HuggingFace</span>
+                <span>•</span>
+                <span>BART</span>
+                <span>•</span>
+                <span>BERT NER</span>
+                <span>•</span>
+                <span>ROUGE</span>
+                <span>•</span>
+                <span>FastAPI</span>
+            </div>
+        </div>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>
