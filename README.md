@@ -69,22 +69,34 @@ python backend/benchmark.py
 
 ### 3. Launching the Application Services
 
-Once the environment is configured, instantiate the backend server. The application relies on Uvicorn as the ASGI web server implementation.
+The project is designed for rapid local deployment. Once the backend environment is configured and the Hugging Face token is set, you can launch both the backend and frontend simultaneously using a single command.
 
+#### **Option A: Unified Launch (Recommended for Windows)**
+From the root directory, execute the batch script:
+```bash
+run.bat
+```
+*This will automatically instantiate the FastAPI backend (Port 8000) and the Vite development server (Port 5173) in separate terminal windows.*
+
+#### **Option B: Manual Launch (Step-by-Step)**
+
+**1. Instantiate the Backend Server:**
+The application utilizes Uvicorn as the ASGI web server implementation.
 ```bash
 cd backend
+venv\Scripts\activate
 python -m uvicorn app:app --host 0.0.0.0 --port 8000 --reload
 ```
 
-In a separate terminal session, initialize the React development server for the frontend interface.
-
+**2. Initialize the Frontend Interface:**
+In a separate terminal session, start the React development server.
 ```bash
 cd frontend-react
 npm install
 npm run dev
 ```
 
-The frontend application will be accessible at `http://localhost:5173` and will automatically route requests to the backend API residing at `http://localhost:8000`.
+The platform will be accessible at `http://localhost:5173`. The frontend automatically handles the proxy routing to the backend API at `http://localhost:8000`.
 
 ## Project Structure
 
