@@ -7,25 +7,28 @@ export default {
   theme: {
     extend: {
       colors: {
-        clinical: {
-          50: '#f8fafc',
-          100: '#f1f5f9',
-          200: '#e2e8f0',
-          300: '#cbd5e1',
-          400: '#94a3b8',
-          500: '#64748b',
-          600: '#475569',
-          700: '#334155',
-          800: '#1e293b',
-          900: '#0f172a',
-          accent: '#0ea5e9', // Trustworthy blue
-          success: '#10b981', // Emerald green
-          warning: '#f59e0b', // Amber
-          danger: '#ef4444', // Red
+        premium: {
+          bg: '#f9f7f2', // Warm Ivory / Cream
+          panel: '#ffffff',
+          dark: '#1a1a1a', // Near Black
+          burgundy: '#4a0e0e', // Deep Wine
+          maroon: '#800000',
+          accent: '#b22222', // Muted Red
+          border: '#e5e1d8',
+          text: {
+            primary: '#1a1a1a',
+            secondary: '#4b4b4b',
+            muted: '#8e8e8e',
+          }
         }
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],
+        serif: ['"Playfair Display"', 'serif'],
+        display: ['"Cormorant Garamond"', 'serif'],
+      },
+      letterSpacing: {
+        widest: '.2em',
       }
     },
   },

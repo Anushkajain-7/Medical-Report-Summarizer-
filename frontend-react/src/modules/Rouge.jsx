@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { computeRouge } from '../services/api';
-import { Type, Loader2, BarChart2 } from 'lucide-react';
+import { BarChart2, Loader2, FileText, Sparkles } from 'lucide-react';
+import Card from '../components/ui/Card';
 
 const Rouge = () => {
   const [reference, setReference] = useState('');
@@ -11,7 +12,7 @@ const Rouge = () => {
 
   const handleEvaluate = async () => {
     if (!reference || !hypothesis) {
-      setError('Both Reference and Hypothesis texts are required.');
+      setError('Neural evaluation requires both Reference and Hypothesis manuscripts.');
       return;
     }
     setLoading(true);
@@ -27,84 +28,75 @@ const Rouge = () => {
   };
 
   const renderMetric = (label, data) => (
-    <div style={{ 
-      background: 'rgba(245, 158, 11, 0.05)', border: '1px solid rgba(245, 158, 11, 0.15)', 
-      borderRadius: 'var(--radius-md)', padding: '1.25rem', textAlign: 'center' 
-    }}>
-      <div style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--accent-amber)', marginBottom: '0.5rem', letterSpacing: '0.5px' }}>
-        {label}
-      </div>
-      <div style={{ fontSize: '2rem', fontWeight: 800, fontFamily: 'var(--font-mono)', color: 'var(--text-primary)', marginBottom: '0.5rem' }}>
+    <div className="flex flex-col items-center gap-4 bg-premium-bg p-8 border border-premium-border">
+      <span className="label-uppercase mb-0 tracking-[0.4em] text-premium-burgundy">{label}</span>
+      <div className="text-5xl font-display text-premium-burgundy italic">
         {data.f1.toFixed(3)}
       </div>
-      <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-        <span>P: {data.precision.toFixed(3)}</span>
-        <span>R: {data.recall.toFixed(3)}</span>
+      <div className="flex gap-6 pt-4 border-t border-premium-border w-full justify-center">
+        <div className="flex flex-col items-center">
+           <span className="text-[8px] font-bold text-premium-text-muted uppercase tracking-widest">Prec</span>
+           <span className="text-[10px] font-bold">{data.precision.toFixed(3)}</span>
+        </div>
+        <div className="flex flex-col items-center">
+           <span className="text-[8px] font-bold text-premium-text-muted uppercase tracking-widest">Rec</span>
+           <span className="text-[10px] font-bold">{data.recall.toFixed(3)}</span>
+        </div>
       </div>
     </div>
   );
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', maxWidth: '1000px', margin: '0 auto' }}>
-      <div>
-        <h1 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '0.5rem' }}>ROUGE <span className="gradient-text">Evaluator</span></h1>
-        <p style={{ color: 'var(--text-secondary)' }}>Compare a generated summary (hypothesis) against an original text (reference).</p>
+    <div className="flex flex-col gap-16 max-w-6xl mx-auto py-12 fade-in">
+      <div className="text-center space-y-6">
+        <span className="label-uppercase tracking-[0.5em]">Linguistic Evaluation</span>
+        <h1 className="text-6xl font-display text-premium-burgundy italic">ROUGE Metrics</h1>
+        <p className="text-premium-text-secondary font-medium uppercase tracking-widest text-[10px]">
+          Computational comparison of generated abstracts against reference ground-truth.
+        </p>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
-        <div className="card" style={{ padding: '1.5rem' }}>
-          <div style={{ fontWeight: 600, marginBottom: '1rem', color: 'var(--text-primary)' }}>Reference Text (Original)</div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <Card title="Reference Manuscript" subtitle="Ground Truth">
           <textarea
             value={reference}
             onChange={(e) => setReference(e.target.value)}
-            placeholder="Paste original text here..."
-            style={{
-              width: '100%', minHeight: '200px', background: 'var(--bg-input)', border: '1px solid var(--border)',
-              borderRadius: 'var(--radius-md)', padding: '1rem', color: 'var(--text-primary)', fontFamily: 'var(--font-mono)',
-              fontSize: '0.85rem', resize: 'vertical', outline: 'none'
-            }}
+            placeholder="Deposit original clinical text..."
+            className="w-full min-h-[250px] bg-premium-bg border border-premium-border p-8 text-sm font-sans text-premium-text-primary focus:outline-none focus:border-premium-burgundy transition-all duration-500 leading-relaxed resize-none"
           />
-        </div>
+        </Card>
 
-        <div className="card" style={{ padding: '1.5rem' }}>
-          <div style={{ fontWeight: 600, marginBottom: '1rem', color: 'var(--accent-cyan)' }}>Hypothesis Text (Summary)</div>
+        <Card title="Hypothesis Manuscript" subtitle="Model Output">
           <textarea
             value={hypothesis}
             onChange={(e) => setHypothesis(e.target.value)}
-            placeholder="Paste generated summary here..."
-            style={{
-              width: '100%', minHeight: '200px', background: 'var(--bg-input)', border: '1px solid rgba(6, 182, 212, 0.3)',
-              borderRadius: 'var(--radius-md)', padding: '1rem', color: 'var(--text-primary)', fontFamily: 'var(--font-mono)',
-              fontSize: '0.85rem', resize: 'vertical', outline: 'none'
-            }}
+            placeholder="Deposit generated summary text..."
+            className="w-full min-h-[250px] bg-premium-bg border border-premium-accent/20 p-8 text-sm font-sans text-premium-text-primary focus:outline-none focus:border-premium-burgundy transition-all duration-500 leading-relaxed resize-none"
           />
-        </div>
+        </Card>
       </div>
 
       {error && (
-        <div style={{ padding: '1rem', background: 'rgba(244, 63, 94, 0.1)', color: 'var(--accent-rose)', borderRadius: 'var(--radius-sm)' }}>
-          {error}
+        <div className="p-4 border border-premium-accent bg-premium-accent/5 text-premium-accent text-[10px] font-bold uppercase tracking-widest flex items-center gap-3 max-w-md mx-auto">
+           <span className="w-1.5 h-1.5 rounded-full bg-premium-accent" />
+           {error}
         </div>
       )}
 
-      <div style={{ display: 'flex', justifyContent: 'center' }}>
+      <div className="flex justify-center">
         <button
           onClick={handleEvaluate}
           disabled={loading || !reference || !hypothesis}
-          style={{
-            background: 'var(--gradient-main)', color: 'white', padding: '12px 32px', borderRadius: 'var(--radius-sm)',
-            fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px', opacity: loading || !reference || !hypothesis ? 0.6 : 1,
-            cursor: loading || !reference || !hypothesis ? 'not-allowed' : 'pointer'
-          }}
+          className="premium-btn flex items-center gap-4"
         >
-          {loading ? <Loader2 size={18} style={{ animation: 'spin 1s linear infinite' }} /> : <BarChart2 size={18} />}
-          {loading ? 'Evaluating...' : 'Compute ROUGE Scores'}
+          {loading ? <Loader2 size={16} className="animate-spin" /> : <BarChart2 size={16} />}
+          {loading ? 'Evaluating...' : 'Compute Evaluation Metrics'}
         </button>
       </div>
 
       {result && result.scores && (
-        <div className="card" style={{ padding: '2rem', animation: 'fadeInUp 0.4s ease', marginTop: '1rem' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.5rem' }}>
+        <div className="slide-up">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {renderMetric('ROUGE-1', result.scores.rouge1)}
             {renderMetric('ROUGE-2', result.scores.rouge2)}
             {renderMetric('ROUGE-L', result.scores.rougeL)}

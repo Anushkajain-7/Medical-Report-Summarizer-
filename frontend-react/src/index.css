@@ -4,36 +4,58 @@
 
 @layer base {
   body {
-    @apply bg-clinical-50 text-clinical-800 font-sans antialiased;
+    @apply bg-premium-bg text-premium-text-primary font-sans antialiased;
     margin: 0;
+  }
+  
+  h1, h2, h3, h4 {
+    @apply font-display tracking-tight;
   }
 }
 
 @layer components {
-  .btn-primary {
-    @apply bg-clinical-accent text-white px-4 py-2 rounded-md font-medium shadow-sm hover:bg-sky-600 transition-colors focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed;
+  .premium-btn {
+    @apply bg-premium-burgundy text-white px-8 py-3 rounded-none font-sans font-semibold uppercase tracking-widest text-xs transition-all duration-500 hover:bg-premium-maroon hover:translate-y-[-2px] disabled:opacity-50 disabled:translate-y-0 shadow-lg;
   }
   
-  .btn-secondary {
-    @apply bg-white text-clinical-600 border border-clinical-200 px-4 py-2 rounded-md font-medium shadow-sm hover:bg-clinical-50 transition-colors focus:outline-none focus:ring-2 focus:ring-clinical-200 focus:ring-offset-2;
+  .premium-card {
+    @apply bg-white rounded-none border border-premium-border shadow-sm transition-all duration-700 hover:shadow-xl;
   }
 
-  .card {
-    @apply bg-white rounded-lg shadow-sm border border-clinical-200;
+  .premium-divider {
+    @apply border-t border-premium-border opacity-50;
   }
 
-  /* Custom scrollbar for a cleaner look */
+  .label-uppercase {
+    @apply text-[10px] font-bold uppercase tracking-[0.25em] text-premium-text-muted mb-2 block;
+  }
+
+  /* Custom scrollbar */
   .scrollbar::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+    width: 4px;
   }
   .scrollbar::-webkit-scrollbar-track {
-    background: transparent;
+    background: #f1f1f1;
   }
   .scrollbar::-webkit-scrollbar-thumb {
-    @apply bg-clinical-300 rounded-full;
+    @apply bg-premium-border transition-colors hover:bg-premium-text-muted;
   }
-  .scrollbar::-webkit-scrollbar-thumb:hover {
-    @apply bg-clinical-400;
-  }
+}
+
+.fade-in {
+  animation: fadeIn 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.slide-up {
+  animation: slideUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
 }

@@ -1,16 +1,15 @@
 import React from 'react';
-import { Check, CircleDot, Circle } from 'lucide-react';
 
 const StatusStepper = ({ currentStep }) => {
   const steps = [
-    { id: 1, label: 'Document Upload' },
-    { id: 2, label: 'Abstractive Summarization' },
-    { id: 3, label: 'Entity Extraction' },
-    { id: 4, label: 'Clinical Recommendations' }
+    { id: 1, label: 'Ingest' },
+    { id: 2, label: 'Summarize' },
+    { id: 3, label: 'Extract' },
+    { id: 4, label: 'Guidance' }
   ];
 
   return (
-    <div className="w-full py-4">
+    <div className="w-full py-8">
       <div className="flex items-center justify-between">
         {steps.map((step, index) => {
           const isCompleted = currentStep > step.id;
@@ -19,25 +18,29 @@ const StatusStepper = ({ currentStep }) => {
           return (
             <div key={step.id} className="flex flex-col items-center relative z-10 flex-1">
               <div 
-                className={`w-8 h-8 rounded-full flex items-center justify-center border-2 transition-all duration-300 bg-white
-                  ${isCompleted ? 'border-clinical-success text-clinical-success' : 
-                    isCurrent ? 'border-clinical-accent text-clinical-accent ring-4 ring-clinical-100' : 
-                    'border-clinical-200 text-clinical-300'}`}
+                className={`w-6 h-6 flex items-center justify-center border transition-all duration-700 bg-white
+                  ${isCompleted ? 'border-premium-burgundy bg-premium-burgundy text-white' : 
+                    isCurrent ? 'border-premium-burgundy text-premium-burgundy scale-125' : 
+                    'border-premium-border text-premium-border'}`}
               >
-                {isCompleted ? <Check size={16} strokeWidth={3} /> : 
-                 isCurrent ? <CircleDot size={16} strokeWidth={2.5} /> : 
-                 <span className="text-xs font-bold">{step.id}</span>}
+                {isCompleted ? (
+                   <span className="text-[8px]">✓</span>
+                ) : (
+                   <span className="text-[10px] font-bold font-sans">{step.id}</span>
+                )}
               </div>
-              <span className={`text-[10px] font-bold uppercase tracking-wider mt-3 text-center transition-colors
-                ${isCompleted || isCurrent ? 'text-clinical-800' : 'text-clinical-400'}`}>
+              <span className={`label-uppercase mt-4 transition-colors duration-500
+                ${isCompleted || isCurrent ? 'text-premium-burgundy' : 'text-premium-border'}`}>
                 {step.label}
               </span>
 
-              {/* Connecting Line */}
               {index < steps.length - 1 && (
-                <div className={`absolute top-4 left-[50%] w-full h-[2px] -z-10 transition-all duration-500
-                  ${isCompleted ? 'bg-clinical-success' : 'bg-clinical-200'}`} 
-                />
+                <div className="absolute top-3 left-[50%] w-full h-[1px] -z-10">
+                  <div className={`h-full transition-all duration-1000 ease-in-out
+                    ${isCompleted ? 'bg-premium-burgundy w-full' : 'bg-premium-border w-0'}`} 
+                  />
+                  <div className="absolute inset-0 bg-premium-border -z-20" />
+                </div>
               )}
             </div>
           );

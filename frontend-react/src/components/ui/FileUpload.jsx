@@ -1,45 +1,52 @@
 import React, { useRef } from 'react';
-import { UploadCloud, FileText, AlertCircle } from 'lucide-react';
+import { Upload, FileText, X } from 'lucide-react';
 
-const FileUpload = ({ file, onFileChange, error }) => {
+const FileUpload = ({ file, onFileChange, error, loading }) => {
   const fileInputRef = useRef(null);
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-6 slide-up">
       <div 
-        onClick={() => fileInputRef.current.click()}
-        className={`border-2 border-dashed rounded-xl p-10 text-center cursor-pointer transition-all duration-200 
+        onClick={() => !loading && fileInputRef.current.click()}
+        className={`group relative overflow-hidden transition-all duration-700 border-2 border-dashed p-16 text-center cursor-pointer
           ${file 
-            ? 'border-clinical-accent bg-blue-50/30 hover:bg-blue-50/50' 
-            : 'border-clinical-300 hover:border-clinical-accent bg-clinical-50 hover:bg-white'
-          }`}
+            ? 'border-premium-burgundy bg-premium-burgundy/5' 
+            : 'border-premium-border bg-white hover:border-premium-maroon hover:bg-premium-bg'
+          } ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
       >
-        <div className="flex justify-center mb-4">
-          <div className={`p-4 rounded-full ${file ? 'bg-blue-100' : 'bg-white shadow-sm border border-clinical-200'}`}>
-            <UploadCloud size={32} className={file ? 'text-clinical-accent' : 'text-clinical-400'} />
+        <div className="flex flex-col items-center justify-center gap-6 relative z-10">
+          <div className={`p-6 border transition-all duration-700 
+            ${file ? 'border-premium-burgundy bg-premium-burgundy text-white' : 'border-premium-border bg-white group-hover:border-premium-maroon'}`}>
+            <Upload size={32} strokeWidth={1.5} className={!file ? 'text-premium-burgundy' : ''} />
           </div>
+          
+          {file ? (
+            <div className="fade-in">
+              <h4 className="text-3xl font-display text-premium-burgundy italic">
+                {file.name}
+              </h4>
+              <p className="label-uppercase mt-4 tracking-[0.4em]">
+                Ready for Analysis • {(file.size / 1024).toFixed(1)} KB
+              </p>
+            </div>
+          ) : (
+            <div>
+              <h4 className="text-4xl font-display text-premium-burgundy mb-2">
+                Deposit Clinical Report
+              </h4>
+              <p className="label-uppercase tracking-[0.4em]">
+                PDF • DOCX • TXT • LIMIT 5MB
+              </p>
+            </div>
+          )}
         </div>
         
-        {file ? (
-          <div>
-            <p className="text-lg font-bold text-clinical-800 flex items-center justify-center gap-2">
-              <FileText size={18} className="text-clinical-500" />
-              {file.name}
-            </p>
-            <p className="text-sm font-medium text-clinical-500 mt-2">
-              {(file.size / 1024).toFixed(1)} KB • Ready for Analysis
-            </p>
-          </div>
-        ) : (
-          <div>
-            <p className="text-lg font-bold text-clinical-800">
-              Select or drag document here
-            </p>
-            <p className="text-sm font-medium text-clinical-500 mt-2">
-              Supported formats: PDF, DOCX, TXT (Max 5MB)
-            </p>
-          </div>
-        )}
+        {/* Decorative corner accents */}
+        <div className="absolute top-4 left-4 w-8 h-8 border-t border-l border-premium-border group-hover:border-premium-maroon transition-colors duration-700" />
+        <div className="absolute top-4 right-4 w-8 h-8 border-t border-r border-premium-border group-hover:border-premium-maroon transition-colors duration-700" />
+        <div className="absolute bottom-4 left-4 w-8 h-8 border-b border-l border-premium-border group-hover:border-premium-maroon transition-colors duration-700" />
+        <div className="absolute bottom-4 right-4 w-8 h-8 border-b border-r border-premium-border group-hover:border-premium-maroon transition-colors duration-700" />
+        
         <input 
           type="file" 
           ref={fileInputRef} 
@@ -50,9 +57,9 @@ const FileUpload = ({ file, onFileChange, error }) => {
       </div>
 
       {error && (
-        <div className="px-4 py-3 bg-red-50 border border-red-100 rounded-lg flex items-start gap-3">
-          <AlertCircle size={18} className="text-red-600 mt-0.5 shrink-0" />
-          <p className="text-sm font-medium text-red-800">{error}</p>
+        <div className="p-6 border border-premium-accent bg-premium-accent/5 text-premium-accent text-sm font-sans font-bold uppercase tracking-widest flex items-center gap-4 fade-in">
+          <X size={16} />
+          {error}
         </div>
       )}
     </div>
