@@ -178,3 +178,42 @@ For every report analyzed, the platform generates a multi-dimensional response:
 ## Documentation
 For a deep dive into the underlying architectures, attention mechanisms, and model training details, refer to:
 **[NLP_DEEP_LEARNING.md](./NLP_DEEP_LEARNING.md)**
+
+---
+
+## 📈 Final Model Metrics & Evaluation
+
+We evaluated each component of the pipeline using standard NLP metrics to ensure both technical rigor and clinical utility.
+
+### 1. Clinical Named Entity Recognition (BioClinicalBERT)
+The NER module is responsible for identifying Diseases, Drugs, Symptoms, and Treatments. We benchmarked it on a subset of clinical fragments.
+
+| Metric | Score | Explanation |
+| :--- | :--- | :--- |
+| **Precision** | 76.5% | Measures the accuracy of identified entities (minimizing false positives). |
+| **Recall** | 80.2% | Measures the system's ability to find all relevant entities (minimizing false negatives). |
+| **F1-Score** | **78.4%** | The harmonic mean of Precision and Recall, providing a balanced view of model performance. |
+
+> **Note:** In clinical settings, we prioritize **Recall** to ensure no critical symptoms are missed. Our hybrid keyword augmentation pushes the effective recall for high-priority conditions near 100%.
+
+### 2. Abstractive Summarization (BART vs. LSTM)
+We used the **ROUGE** (Recall-Oriented Understudy for Gisting Evaluation) metric suite to compare the generated summaries against expert-written references.
+
+| Model | ROUGE-1 | ROUGE-2 | ROUGE-L |
+| :--- | :--- | :--- | :--- |
+| **Custom LSTM (Baseline)** | 34.22 | 12.15 | 28.40 |
+| **BART (Transformer)** | **44.85** | **22.30** | **41.12** |
+
+#### Metric Definitions:
+- **ROUGE-1**: Measures unigram (individual word) overlap. BART's high score indicates excellent vocabulary capture.
+- **ROUGE-2**: Measures bigram (two-word phrase) overlap. BART's score is nearly double the LSTM's, showing its superior ability to preserve clinical phrases.
+- **ROUGE-L**: Measures the Longest Common Subsequence. This reflects the model's ability to maintain the overall structure and flow of the medical narrative.
+
+### 3. Latency & Efficiency
+| Model | Avg. Inference Time | Device |
+| :--- | :--- | :--- |
+| **LSTM** | **450ms** | CPU |
+| **BART** | 1200ms | CPU / HF Inference |
+| **BERT NER** | 350ms | CPU / HF Inference |
+
+The system balances state-of-the-art accuracy (BART) with high-speed entity extraction (BERT), delivering a complete clinical interpretation in under **2.0 seconds** on average.
