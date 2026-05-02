@@ -38,7 +38,7 @@ npm install
 ## Running the Project
 The project is designed to be launched with a single command. From the root directory, run:
 ```bash
-run.bat
+.\run.bat
 ```
 - Frontend: http://localhost:5173
 - Backend: http://localhost:8000
