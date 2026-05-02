@@ -13,7 +13,7 @@ from typing import Dict, List, Optional
 from collections import defaultdict
 
 HF_API_TOKEN = os.getenv("HF_API_TOKEN", "")
-NER_API_URL = "https://router.huggingface.co/hf-inference/models/dslim/bert-base-NER"
+NER_API_URL = "https://router.huggingface.co/hf-inference/models/samrawal/bert-base-uncased_clinical-ner"
 
 # Persistent session for connection pooling
 session = requests.Session()
@@ -157,6 +157,7 @@ def _map_ner_label(label: str) -> Optional[str]:
     """Map standard NER labels to clinical categories."""
     label = label.upper().replace("B-", "").replace("I-", "")
     mapping = {
+        # General NER mappings (fallback)
         "MISC": "DISEASE",
         "ORG": "TREATMENT",
         "PER": None,
@@ -165,6 +166,9 @@ def _map_ner_label(label: str) -> Optional[str]:
         "DRUG": "DRUG",
         "SYMPTOM": "SYMPTOM",
         "TREATMENT": "TREATMENT",
+        # samrawal/bert-base-uncased_clinical-ner mappings
+        "PROBLEM": "DISEASE",     # Group problems under disease/symptom category
+        "TEST": "TREATMENT",      # Group medical tests under treatments
     }
     return mapping.get(label)
 

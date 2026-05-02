@@ -37,7 +37,11 @@ def chunk_text(text: str, max_chunk_size: int = 1024, overlap: int = 128) -> Lis
     if current_chunk.strip():
         chunks.append(current_chunk.strip())
 
-    return chunks if chunks else [text]
+    # Safeguard: Absolute limit on number of chunks to prevent OOM/DoS
+    if len(chunks) > 20:
+        chunks = chunks[:20]
+
+    return chunks if chunks else [text[:max_chunk_size]]
 
 
 def prepare_for_summarization(text: str, max_input_length: int = 3000) -> List[str]:
@@ -48,5 +52,9 @@ def prepare_for_summarization(text: str, max_input_length: int = 3000) -> List[s
     # Clean the text
     text = re.sub(r'\s+', ' ', text).strip()
     text = re.sub(r'\n{3,}', '\n\n', text)
+
+    # Safeguard: Truncate absolutely massive text blocks (e.g. 50,000 chars)
+    if len(text) > 50000:
+        text = text[:50000]
 
     return chunk_text(text, max_chunk_size=max_input_length, overlap=100)

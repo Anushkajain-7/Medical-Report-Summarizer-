@@ -187,6 +187,7 @@ def evaluate_rouge(model, dataset, tokenizer, device, n_samples=100):
     """Evaluate ROUGE scores on a subset."""
     model.eval()
     rouge_scores = {"rouge1": [], "rouge2": [], "rougeL": []}
+    examples = []
 
     with torch.no_grad():
         for i in range(min(n_samples, len(dataset))):
@@ -197,6 +198,15 @@ def evaluate_rouge(model, dataset, tokenizer, device, n_samples=100):
             generated = model.generate(src, src_lengths, max_len=128)
             pred_text = tokenizer.decode(generated[0])
             ref_text = tokenizer.decode(trg)
+            
+            # Save a few examples for qualitative comparison
+            if i < 3:
+                orig_text = tokenizer.decode(src[0])
+                examples.append({
+                    "original": orig_text[:200] + "...",
+                    "reference": ref_text,
+                    "prediction": pred_text
+                })
 
             if pred_text.strip() and ref_text.strip():
                 scores = compute_rouge_scores(ref_text, pred_text)
@@ -208,7 +218,7 @@ def evaluate_rouge(model, dataset, tokenizer, device, n_samples=100):
         vals = rouge_scores[metric]
         avg_scores[metric] = round(sum(vals) / max(len(vals), 1), 4)
 
-    return avg_scores
+    return avg_scores, examples
 
 
 # ============================================================
@@ -323,7 +333,7 @@ def main():
 
         # ROUGE evaluation
         print(f"\n  Evaluating ROUGE scores for {config['name']}...")
-        rouge = evaluate_rouge(model, val_ds, tokenizer, device, n_samples=50)
+        rouge, examples = evaluate_rouge(model, val_ds, tokenizer, device, n_samples=50)
         print(f"  ROUGE-1: {rouge['rouge1']} | ROUGE-2: {rouge['rouge2']} | ROUGE-L: {rouge['rougeL']}")
 
         results[config["name"]] = {
@@ -335,7 +345,8 @@ def main():
                 "n_layers": args.n_layers,
                 "attention": config["use_attention"],
                 "teacher_forcing": args.teacher_forcing,
-            }
+            },
+            "examples": examples
         }
 
     # Save results
@@ -362,6 +373,20 @@ def main():
         for metric in ["rouge1", "rouge2", "rougeL"]:
             diff = with_attn[metric] - without_attn[metric]
             print(f"  {metric}: +attention={with_attn[metric]} | -attention={without_attn[metric]} | delta={diff:+.4f}")
+            
+        print(f"\n{'='*60}")
+        print("QUALITATIVE COMPARISON")
+        print(f"{'='*60}")
+        
+        examples_attn = results["with_attention"]["examples"]
+        examples_no_attn = results["without_attention"]["examples"]
+        
+        for i in range(len(examples_attn)):
+            print(f"\nExample {i+1}:")
+            print(f"Original: {examples_attn[i]['original']}")
+            print(f"Reference: {examples_attn[i]['reference']}")
+            print(f"LSTM (-Attention): {examples_no_attn[i]['prediction']}")
+            print(f"LSTM (+Attention): {examples_attn[i]['prediction']}")
 
 
 if __name__ == "__main__":
