@@ -6,7 +6,7 @@ Developed by **Sai Venkat** and **Anushka Jain**
 
 ---
 
-## 🏥 Overview
+## Overview
 
 The **Medical Report Intelligence Platform** is a state-of-the-art healthcare AI solution designed to bridge the interpretability gap in clinical documentation. Unlike standard text summarizers, this platform performs deep clinical reasoning to transform unstructured medical reports (PDF, DOCX, TXT) into structured, actionable, and human-readable health intelligence.
 
@@ -14,19 +14,19 @@ The system interprets technical medical narratives just as a clinical expert wou
 
 ---
 
-## 🚀 Core Pillars
+## Core Pillars
 
-### 🧠 Narrative-Aware Reasoning
+### Narrative-Aware Reasoning
 The engine doesn't just extract keywords; it evaluates the entire clinical story. By analyzing the relationship between symptoms, procedures, and findings, it identifies the dominant medical domain (e.g., Cardiac, Vascular, Oncology) and accurately triages the severity of the report.
 
-### 🔍 Clinical Named Entity Recognition (NER)
+### Clinical Named Entity Recognition (NER)
 Powered by **BioClinicalBERT**, the system extracts four critical taxonomies:
 - **Diseases & Conditions**
 - **Medications & Dosages**
 - **Symptoms & Observations**
 - **Medical Procedures & Treatments**
 
-### 📋 Proactive Intelligence
+### Proactive Intelligence
 Beyond the summary, the platform generates a comprehensive care plan:
 - **What this means:** A plain-language explanation of the findings.
 - **Action Plan:** Concrete "Do's" and "Avoid's" based on the clinical context.
@@ -35,7 +35,7 @@ Beyond the summary, the platform generates a comprehensive care plan:
 
 ---
 
-## 🛠️ Technology Stack
+## Technology Stack
 
 | Layer | Technologies |
 | :--- | :--- |
@@ -47,7 +47,7 @@ Beyond the summary, the platform generates a comprehensive care plan:
 
 ---
 
-## 📂 Project Structure
+## Project Structure
 
 ```text
 Medical-Report-Summarizer/
@@ -64,7 +64,7 @@ Medical-Report-Summarizer/
 
 ---
 
-## ⚙️ Installation & Setup
+## Installation & Setup
 
 ### Prerequisites
 - Python 3.9 - 3.11
@@ -94,7 +94,7 @@ npm install
 
 ---
 
-## 🚦 Execution
+## Execution
 
 For the best experience, run the backend and frontend in separate terminals:
 
@@ -114,7 +114,7 @@ The application will be available at **`http://localhost:5173`**.
 
 ---
 
-## 📊 Pipeline Flow & Output
+## Pipeline Flow & Output
 
 For every report analyzed, the platform generates a multi-dimensional response:
 1. **Technical Summary:** A concise clinical abstract using BART.
@@ -125,12 +125,12 @@ For every report analyzed, the platform generates a multi-dimensional response:
 
 ---
 
-## ⚠️ Disclaimer
+## Disclaimer
 
 **This system is for informational and educational purposes only.** It is not a substitute for professional medical advice, diagnosis, or treatment. Always seek the advice of your physician or other qualified health provider with any questions you may have regarding a medical condition.
 
 ---
 
-## 📄 Documentation
+## Documentation
 For a deep dive into the underlying architectures, attention mechanisms, and model training details, refer to:
-👉 **[NLP_DEEP_LEARNING.md](./NLP_DEEP_LEARNING.md)**
+**[NLP_DEEP_LEARNING.md](./NLP_DEEP_LEARNING.md)**
