@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+env/
+.env
+
+# Node.js
+node_modules/
+dist/
+.npm
+package-lock.json
+
+# IDEs
+.vscode/
+.idea/
+.DS_Store
+
+# OS
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# App Data
+.gemini/
+.antigravity/
+artifacts/
+logs/
