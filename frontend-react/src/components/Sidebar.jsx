@@ -10,7 +10,7 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
   ];
 
   return (
-    <div className="fixed inset-y-0 left-0 w-72 bg-premium-dark text-white hidden lg:flex flex-col z-50 overflow-hidden">
+    <div className="fixed inset-y-0 left-0 w-72 bg-premiumDark text-white hidden lg:flex flex-col z-50 overflow-hidden">
       {/* Brand Section */}
       <div className="p-12 pb-24">
         <div className="flex flex-col gap-2">
@@ -36,7 +36,7 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
                   `}
                 >
                   {isActive && (
-                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-premium-maroon" />
+                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-premiumPrimary" />
                   )}
                   <Icon size={18} strokeWidth={isActive ? 2.5 : 1.5} className="transition-transform duration-500 group-hover:scale-110" />
                   <span className="text-xs font-bold uppercase tracking-widest">{tab.label}</span>
@@ -50,7 +50,7 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
           <span className="label-uppercase text-white/30 px-4">Deployment</span>
           <div className="px-4 py-6 bg-white/5 border border-white/10">
             <div className="flex items-center gap-3 mb-4">
-              <ShieldCheck size={16} className="text-premium-accent" />
+              <ShieldCheck size={16} className="text-premiumAccent" />
               <span className="text-[10px] font-bold uppercase tracking-widest">Secure Instance</span>
             </div>
             <p className="text-[10px] text-white/40 leading-relaxed uppercase tracking-wider">
@@ -63,7 +63,7 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
       {/* Footer Branding */}
       <div className="p-12 border-t border-white/5">
         <div className="flex items-center gap-3">
-          <div className="w-2 h-2 rounded-full bg-premium-accent animate-pulse" />
+          <div className="w-2 h-2 rounded-full bg-premiumAccent animate-pulse" />
           <span className="text-[10px] font-bold uppercase tracking-widest text-white/40">Build v2.4.1</span>
         </div>
       </div>

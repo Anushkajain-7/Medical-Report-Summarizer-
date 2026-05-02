@@ -19,9 +19,9 @@ const StatusStepper = ({ currentStep }) => {
             <div key={step.id} className="flex flex-col items-center relative z-10 flex-1">
               <div 
                 className={`w-6 h-6 flex items-center justify-center border transition-all duration-700 bg-white
-                  ${isCompleted ? 'border-premium-burgundy bg-premium-burgundy text-white' : 
-                    isCurrent ? 'border-premium-burgundy text-premium-burgundy scale-125' : 
-                    'border-premium-border text-premium-border'}`}
+                  ${isCompleted ? 'border-premiumPrimary bg-premiumPrimary text-white' : 
+                    isCurrent ? 'border-premiumPrimary text-premiumPrimary scale-125' : 
+                    'border-premiumNeutral text-premiumNeutral'}`}
               >
                 {isCompleted ? (
                    <span className="text-[8px]">✓</span>
@@ -30,16 +30,16 @@ const StatusStepper = ({ currentStep }) => {
                 )}
               </div>
               <span className={`label-uppercase mt-4 transition-colors duration-500
-                ${isCompleted || isCurrent ? 'text-premium-burgundy' : 'text-premium-border'}`}>
+                ${isCompleted || isCurrent ? 'text-premiumPrimary' : 'text-premiumNeutral'}`}>
                 {step.label}
               </span>
 
               {index < steps.length - 1 && (
                 <div className="absolute top-3 left-[50%] w-full h-[1px] -z-10">
                   <div className={`h-full transition-all duration-1000 ease-in-out
-                    ${isCompleted ? 'bg-premium-burgundy w-full' : 'bg-premium-border w-0'}`} 
+                    ${isCompleted ? 'bg-premiumPrimary w-full' : 'bg-premiumNeutral w-0'}`} 
                   />
-                  <div className="absolute inset-0 bg-premium-border -z-20" />
+                  <div className="absolute inset-0 bg-premiumNeutral -z-20" />
                 </div>
               )}
             </div>

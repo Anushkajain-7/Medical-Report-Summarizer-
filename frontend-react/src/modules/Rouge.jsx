@@ -28,18 +28,18 @@ const Rouge = () => {
   };
 
   const renderMetric = (label, data) => (
-    <div className="flex flex-col items-center gap-4 bg-premium-bg p-8 border border-premium-border">
-      <span className="label-uppercase mb-0 tracking-[0.4em] text-premium-burgundy">{label}</span>
-      <div className="text-5xl font-display text-premium-burgundy italic">
+    <div className="flex flex-col items-center gap-4 bg-premiumBg p-8 border border-premiumNeutral">
+      <span className="label-uppercase mb-0 tracking-[0.4em] text-premiumPrimary">{label}</span>
+      <div className="text-5xl font-display text-premiumPrimary italic">
         {data.f1.toFixed(3)}
       </div>
-      <div className="flex gap-6 pt-4 border-t border-premium-border w-full justify-center">
+      <div className="flex gap-6 pt-4 border-t border-premiumNeutral w-full justify-center">
         <div className="flex flex-col items-center">
-           <span className="text-[8px] font-bold text-premium-text-muted uppercase tracking-widest">Prec</span>
+           <span className="text-[8px] font-bold text-premiumText-muted uppercase tracking-widest">Prec</span>
            <span className="text-[10px] font-bold">{data.precision.toFixed(3)}</span>
         </div>
         <div className="flex flex-col items-center">
-           <span className="text-[8px] font-bold text-premium-text-muted uppercase tracking-widest">Rec</span>
+           <span className="text-[8px] font-bold text-premiumText-muted uppercase tracking-widest">Rec</span>
            <span className="text-[10px] font-bold">{data.recall.toFixed(3)}</span>
         </div>
       </div>
@@ -50,8 +50,8 @@ const Rouge = () => {
     <div className="flex flex-col gap-16 max-w-6xl mx-auto py-12 fade-in">
       <div className="text-center space-y-6">
         <span className="label-uppercase tracking-[0.5em]">Linguistic Evaluation</span>
-        <h1 className="text-6xl font-display text-premium-burgundy italic">ROUGE Metrics</h1>
-        <p className="text-premium-text-secondary font-medium uppercase tracking-widest text-[10px]">
+        <h1 className="text-6xl font-display text-premiumPrimary italic">ROUGE Metrics</h1>
+        <p className="text-premiumText-secondary font-medium uppercase tracking-widest text-[10px]">
           Computational comparison of generated abstracts against reference ground-truth.
         </p>
       </div>
@@ -62,7 +62,7 @@ const Rouge = () => {
             value={reference}
             onChange={(e) => setReference(e.target.value)}
             placeholder="Deposit original clinical text..."
-            className="w-full min-h-[250px] bg-premium-bg border border-premium-border p-8 text-sm font-sans text-premium-text-primary focus:outline-none focus:border-premium-burgundy transition-all duration-500 leading-relaxed resize-none"
+            className="w-full min-h-[250px] bg-premiumBg border border-premiumNeutral p-8 text-sm font-sans text-premiumText-primary focus:outline-none focus:border-premiumPrimary transition-all duration-500 leading-relaxed resize-none"
           />
         </Card>
 
@@ -71,14 +71,14 @@ const Rouge = () => {
             value={hypothesis}
             onChange={(e) => setHypothesis(e.target.value)}
             placeholder="Deposit generated summary text..."
-            className="w-full min-h-[250px] bg-premium-bg border border-premium-accent/20 p-8 text-sm font-sans text-premium-text-primary focus:outline-none focus:border-premium-burgundy transition-all duration-500 leading-relaxed resize-none"
+            className="w-full min-h-[250px] bg-premiumBg border border-premiumAccent/20 p-8 text-sm font-sans text-premiumText-primary focus:outline-none focus:border-premiumPrimary transition-all duration-500 leading-relaxed resize-none"
           />
         </Card>
       </div>
 
       {error && (
-        <div className="p-4 border border-premium-accent bg-premium-accent/5 text-premium-accent text-[10px] font-bold uppercase tracking-widest flex items-center gap-3 max-w-md mx-auto">
-           <span className="w-1.5 h-1.5 rounded-full bg-premium-accent" />
+        <div className="p-4 border border-premiumAccent bg-premiumAccent/5 text-premiumAccent text-[10px] font-bold uppercase tracking-widest flex items-center gap-3 max-w-md mx-auto">
+           <span className="w-1.5 h-1.5 rounded-full bg-premiumAccent" />
            {error}
         </div>
       )}
@@ -87,7 +87,7 @@ const Rouge = () => {
         <button
           onClick={handleEvaluate}
           disabled={loading || !reference || !hypothesis}
-          className="premium-btn flex items-center gap-4"
+          className="premiumBtn flex items-center gap-4"
         >
           {loading ? <Loader2 size={16} className="animate-spin" /> : <BarChart2 size={16} />}
           {loading ? 'Evaluating...' : 'Compute Evaluation Metrics'}

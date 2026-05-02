@@ -39,8 +39,8 @@ const Summarizer = () => {
     <div className="flex flex-col gap-16 max-w-4xl mx-auto py-12 fade-in">
       <div className="text-center space-y-6">
         <span className="label-uppercase tracking-[0.5em]">Direct Access Node</span>
-        <h1 className="text-6xl font-display text-premium-burgundy italic">Abstractive Summarizer</h1>
-        <p className="text-premium-text-secondary font-medium uppercase tracking-widest text-[10px]">
+        <h1 className="text-6xl font-display text-premiumPrimary italic">Abstractive Summarizer</h1>
+        <p className="text-premiumText-secondary font-medium uppercase tracking-widest text-[10px]">
           Direct interface for the BART-large-CNN neural architecture.
         </p>
       </div>
@@ -50,12 +50,12 @@ const Summarizer = () => {
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder="Paste medical text for direct synthesis..."
-          className="w-full min-h-[300px] bg-premium-bg border border-premium-border p-8 text-sm font-sans text-premium-text-primary focus:outline-none focus:border-premium-burgundy transition-all duration-500 leading-relaxed resize-none"
+          className="w-full min-h-[300px] bg-premiumBg border border-premiumNeutral p-8 text-sm font-sans text-premiumText-primary focus:outline-none focus:border-premiumPrimary transition-all duration-500 leading-relaxed resize-none"
         />
         
         {error && (
-          <div className="mt-6 p-4 border border-premium-accent bg-premium-accent/5 text-premium-accent text-[10px] font-bold uppercase tracking-widest flex items-center gap-3">
-             <span className="w-1.5 h-1.5 rounded-full bg-premium-accent" />
+          <div className="mt-6 p-4 border border-premiumAccent bg-premiumAccent/5 text-premiumAccent text-[10px] font-bold uppercase tracking-widest flex items-center gap-3">
+             <span className="w-1.5 h-1.5 rounded-full bg-premiumAccent" />
              {error}
           </div>
         )}
@@ -65,7 +65,7 @@ const Summarizer = () => {
            <button
             onClick={handleSummarize}
             disabled={loading || !text}
-            className="premium-btn flex items-center gap-3"
+            className="premiumBtn flex items-center gap-3"
           >
             {loading ? <Loader2 size={16} className="animate-spin" /> : <Sparkles size={16} />}
             {loading ? 'Synthesizing...' : 'Run Summarization'}
@@ -81,16 +81,16 @@ const Summarizer = () => {
           rightElement={
             <button
               onClick={handleCopy}
-              className="text-[10px] font-bold uppercase tracking-widest text-premium-burgundy border-b border-premium-burgundy pb-1 hover:text-premium-maroon transition-colors"
+              className="text-[10px] font-bold uppercase tracking-widest text-premiumPrimary border-b border-premiumPrimary pb-1 hover:text-premiumAccent transition-colors"
             >
               {copied ? 'Copied' : 'Copy Abstract'}
             </button>
           }
         >
-          <div className="text-lg font-display text-premium-burgundy leading-relaxed italic">
+          <div className="text-lg font-display text-premiumPrimary leading-relaxed italic">
             {result.summary}
           </div>
-          <div className="mt-8 pt-8 border-t border-premium-border flex justify-between items-center">
+          <div className="mt-8 pt-8 border-t border-premiumNeutral flex justify-between items-center">
              <span className="label-uppercase mb-0">Model Instance: {result.model || 'BART-CNN'}</span>
              <span className="label-uppercase mb-0">Status: {result.status || 'Verified'}</span>
           </div>

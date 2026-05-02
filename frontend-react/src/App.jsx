@@ -20,7 +20,7 @@ function App() {
   };
 
   return (
-    <div className="flex min-h-screen w-full bg-premium-bg text-premium-text-primary selection:bg-premium-burgundy selection:text-white">
+    <div className="flex min-h-screen w-full bg-premiumBg text-premiumText-primary selection:bg-premiumPrimary selection:text-white">
       {/* Editorial Sidebar */}
       <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
 
@@ -34,23 +34,23 @@ function App() {
           </div>
           
           {/* Global Page Footer */}
-          <footer className="mt-32 pt-16 border-t border-premium-border flex flex-col md:flex-row justify-between items-start gap-8">
+          <footer className="mt-32 pt-16 border-t border-premiumNeutral flex flex-col md:flex-row justify-between items-start gap-8">
             <div className="max-w-xs">
-              <h4 className="text-2xl font-display text-premium-burgundy mb-4">MedReport Intelligence</h4>
-              <p className="text-xs font-medium text-premium-text-muted leading-relaxed uppercase tracking-widest">
+              <h4 className="text-2xl font-display text-premiumPrimary mb-4">MedReport Intelligence</h4>
+              <p className="text-xs font-medium text-premiumText-muted leading-relaxed uppercase tracking-widest">
                 Professional-grade clinical documentation processing powered by neural architectures.
               </p>
             </div>
             <div className="flex gap-16">
               <div className="flex flex-col gap-3">
                 <span className="label-uppercase">Project</span>
-                <a href="#" className="text-xs font-bold hover:text-premium-burgundy transition-colors">Documentation</a>
-                <a href="#" className="text-xs font-bold hover:text-premium-burgundy transition-colors">Model Notes</a>
+                <a href="#" className="text-xs font-bold hover:text-premiumPrimary transition-colors">Documentation</a>
+                <a href="#" className="text-xs font-bold hover:text-premiumPrimary transition-colors">Model Notes</a>
               </div>
               <div className="flex flex-col gap-3">
                 <span className="label-uppercase">Legal</span>
-                <a href="#" className="text-xs font-bold hover:text-premium-burgundy transition-colors">HIPAA Compliance</a>
-                <a href="#" className="text-xs font-bold hover:text-premium-burgundy transition-colors">Data Privacy</a>
+                <a href="#" className="text-xs font-bold hover:text-premiumPrimary transition-colors">HIPAA Compliance</a>
+                <a href="#" className="text-xs font-bold hover:text-premiumPrimary transition-colors">Data Privacy</a>
               </div>
             </div>
           </footer>

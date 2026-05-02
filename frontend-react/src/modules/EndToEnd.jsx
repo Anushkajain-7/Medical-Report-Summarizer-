@@ -32,7 +32,6 @@ const EndToEnd = () => {
     setCurrentStep(2);
 
     try {
-      // Mock progression for editorial feel
       const progression = setInterval(() => {
         setCurrentStep(prev => prev < 4 ? prev + 1 : prev);
       }, 2000);
@@ -85,11 +84,11 @@ const EndToEnd = () => {
       <section className="flex flex-col items-center text-center max-w-5xl mx-auto gap-12 fade-in">
         <div className="flex flex-col gap-6">
           <span className="label-uppercase tracking-[0.6em]">MedReport Intelligence Platform</span>
-          <h1 className="text-7xl lg:text-9xl font-display text-premium-burgundy leading-[0.9] tracking-tighter">
+          <h1 className="text-7xl lg:text-9xl font-display text-premiumPrimary leading-[0.9] tracking-tighter">
             Synthesize Clinical <br />
             <span className="italic">Complexity.</span>
           </h1>
-          <p className="text-xl font-sans text-premium-text-secondary max-w-2xl mx-auto leading-relaxed mt-4">
+          <p className="text-xl font-sans text-premiumText-secondary max-w-2xl mx-auto leading-relaxed mt-4">
             An advanced AI engine designed to ingest unstructured clinical reports, generate high-fidelity summaries, 
             and extract structured medical intelligence with professional precision.
           </p>
@@ -107,7 +106,7 @@ const EndToEnd = () => {
             <button
               onClick={handleAnalyze}
               disabled={loading || !file}
-              className="premium-btn flex items-center gap-4 group"
+              className="premiumBtn flex items-center gap-4 group"
             >
               Initiate Analysis
               <ArrowRight size={16} className="transition-transform duration-500 group-hover:translate-x-2" />
@@ -134,7 +133,7 @@ const EndToEnd = () => {
         <section className="flex flex-col gap-24 animate-in fade-in slide-in-from-bottom-12 duration-1000">
           
           {/* Metadata Bar */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-px bg-premium-border border border-premium-border">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-px bg-premiumNeutral border border-premiumNeutral">
             {[
               { label: 'Processing Latency', value: `${result.processing_time}s`, icon: Clock },
               { label: 'Character Volume', value: result.input_length, icon: Hash },
@@ -142,9 +141,9 @@ const EndToEnd = () => {
               { label: 'Intelligence Model', value: result.summary_model, icon: Sparkles },
             ].map((stat, i) => (
               <div key={i} className="bg-white p-8 flex flex-col gap-2">
-                <stat.icon size={14} className="text-premium-text-muted mb-2" />
+                <stat.icon size={14} className="text-premiumText-muted mb-2" />
                 <span className="label-uppercase mb-0">{stat.label}</span>
-                <span className="text-3xl font-display text-premium-burgundy">{stat.value}</span>
+                <span className="text-3xl font-display text-premiumPrimary">{stat.value}</span>
               </div>
             ))}
           </div>
@@ -155,7 +154,7 @@ const EndToEnd = () => {
             {/* Left: Source Text (Editorial Frame) */}
             <div className="lg:col-span-4 h-[700px] flex">
               <Card title="Source Manuscript" subtitle="Original Record" className="w-full flex-1 border-r-0">
-                <div className="font-sans text-xs text-premium-text-secondary leading-[2] text-justify space-y-6">
+                <div className="font-sans text-xs text-premiumText-secondary leading-[2] text-justify space-y-6">
                   {result.raw_text.split('\n').map((para, i) => (
                     <p key={i}>{para}</p>
                   ))}
@@ -168,17 +167,17 @@ const EndToEnd = () => {
               <Card 
                 title="Clinical Abstract" 
                 subtitle="Synthesized Summary" 
-                className="w-full flex-1 border-x border-premium-border shadow-2xl relative z-10"
+                className="w-full flex-1 border-x border-premiumNeutral shadow-2xl relative z-10"
               >
-                <div className="text-xl font-display text-premium-burgundy leading-relaxed first-letter:text-5xl first-letter:font-display first-letter:mr-3 first-letter:float-left italic">
+                <div className="text-xl font-display text-premiumPrimary leading-relaxed first-letter:text-5xl first-letter:font-display first-letter:mr-3 first-letter:float-left italic">
                   {result.summary}
                 </div>
                 
-                <div className="mt-16 pt-16 border-t border-premium-border space-y-8">
+                <div className="mt-16 pt-16 border-t border-premiumNeutral space-y-8">
                   <div className="flex flex-col gap-4">
                     <span className="label-uppercase">Summary Confidence</span>
-                    <div className="h-1 bg-premium-bg w-full">
-                      <div className="h-full bg-premium-maroon w-[94%]" />
+                    <div className="h-1 bg-premiumBg w-full">
+                      <div className="h-full bg-premiumAccent w-[94%]" />
                     </div>
                   </div>
                 </div>
@@ -194,7 +193,7 @@ const EndToEnd = () => {
                     if (items.length === 0) return null;
                     return (
                       <div key={category} className="flex flex-col gap-4">
-                        <h4 className="text-[10px] font-bold text-premium-text-muted uppercase tracking-[0.3em] border-b border-premium-border pb-2">
+                        <h4 className="text-[10px] font-bold text-premiumText-muted uppercase tracking-[0.3em] border-b border-premiumNeutral pb-2">
                           {category}
                         </h4>
                         <div className="flex flex-wrap gap-2">
@@ -206,7 +205,7 @@ const EndToEnd = () => {
                     );
                   })}
                   
-                  <div className="mt-8 pt-8 border-t border-premium-border h-[180px]">
+                  <div className="mt-8 pt-8 border-t border-premiumNeutral h-[180px]">
                     <span className="label-uppercase mb-6">Distribution</span>
                     <Bar data={getChartData()} options={chartOptions} />
                   </div>
@@ -220,14 +219,14 @@ const EndToEnd = () => {
             <div className="mt-12 slide-up">
               <div className="flex flex-col gap-4 mb-12 items-center text-center">
                 <span className="label-uppercase">Expert Analysis</span>
-                <h2 className="text-5xl font-display text-premium-burgundy">Clinical Action Guidance</h2>
+                <h2 className="text-5xl font-display text-premiumPrimary">Clinical Action Guidance</h2>
               </div>
 
               <div className="grid grid-cols-1 gap-12">
                 {Object.entries(result.recommendations.conditions).map(([disease, recs], idx) => (
-                  <div key={idx} className="bg-white border border-premium-border overflow-hidden flex flex-col lg:flex-row shadow-xl">
+                  <div key={idx} className="bg-white border border-premiumNeutral overflow-hidden flex flex-col lg:flex-row shadow-xl">
                     {/* Left Disease Branding */}
-                    <div className="lg:w-1/4 bg-premium-burgundy text-white p-12 flex flex-col justify-between">
+                    <div className="lg:w-1/4 bg-premiumPrimary text-white p-12 flex flex-col justify-between">
                       <div className="flex flex-col gap-4">
                          <span className="text-[10px] font-bold uppercase tracking-[0.4em] opacity-40">Target Condition</span>
                          <h3 className="text-4xl font-display leading-tight italic">{disease.toLowerCase()}</h3>
@@ -242,7 +241,7 @@ const EndToEnd = () => {
                           <h5 className="label-uppercase text-emerald-700">Protocols</h5>
                           <ul className="space-y-3">
                             {recs.recommended_actions.map((item, i) => (
-                              <li key={i} className="text-sm font-medium text-premium-text-primary flex items-start gap-4">
+                              <li key={i} className="text-sm font-medium text-premiumText-primary flex items-start gap-4">
                                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-1.5 shrink-0" />
                                 {item}
                               </li>
@@ -250,11 +249,11 @@ const EndToEnd = () => {
                           </ul>
                         </div>
                         <div className="space-y-4">
-                          <h5 className="label-uppercase text-premium-accent">Contraindications</h5>
+                          <h5 className="label-uppercase text-premiumAccent">Contraindications</h5>
                           <ul className="space-y-3">
                             {recs.things_to_avoid.map((item, i) => (
-                              <li key={i} className="text-sm font-medium text-premium-text-primary flex items-start gap-4">
-                                <span className="w-1.5 h-1.5 rounded-full bg-premium-accent mt-1.5 shrink-0" />
+                              <li key={i} className="text-sm font-medium text-premiumText-primary flex items-start gap-4">
+                                <span className="w-1.5 h-1.5 rounded-full bg-premiumAccent mt-1.5 shrink-0" />
                                 {item}
                               </li>
                             ))}
@@ -263,25 +262,25 @@ const EndToEnd = () => {
                       </div>
 
                       <div className="flex flex-col gap-10">
-                        <div className="bg-premium-bg p-8 border border-premium-border space-y-6">
-                           <h5 className="label-uppercase text-premium-burgundy">Dietary Intelligence</h5>
+                        <div className="bg-premiumBg p-8 border border-premiumNeutral space-y-6">
+                           <h5 className="label-uppercase text-premiumPrimary">Dietary Intelligence</h5>
                            <div className="grid grid-cols-1 gap-6">
                               <div>
-                                <span className="text-[9px] font-bold uppercase text-premium-text-muted mb-2 block tracking-widest">Recommended</span>
+                                <span className="text-[9px] font-bold uppercase text-premiumText-muted mb-2 block tracking-widest">Recommended</span>
                                 <p className="text-xs font-bold leading-relaxed">{recs.diet_recommended.join(' • ')}</p>
                               </div>
-                              <div className="pt-4 border-t border-premium-border">
-                                <span className="text-[9px] font-bold uppercase text-premium-accent mb-2 block tracking-widest">Restricted</span>
+                              <div className="pt-4 border-t border-premiumNeutral">
+                                <span className="text-[9px] font-bold uppercase text-premiumAccent mb-2 block tracking-widest">Restricted</span>
                                 <p className="text-xs font-bold leading-relaxed">{recs.diet_avoid.join(' • ')}</p>
                               </div>
                            </div>
                         </div>
                         <div className="space-y-4">
-                          <h5 className="label-uppercase text-premium-text-primary">Lifestyle Interventions</h5>
+                          <h5 className="label-uppercase text-premiumText-primary">Lifestyle Interventions</h5>
                           <ul className="space-y-3">
                             {recs.lifestyle.map((item, i) => (
-                              <li key={i} className="text-sm font-medium text-premium-text-secondary flex items-start gap-4">
-                                <span className="w-1.5 h-1.5 rounded-full bg-premium-text-muted mt-1.5 shrink-0" />
+                              <li key={i} className="text-sm font-medium text-premiumText-secondary flex items-start gap-4">
+                                <span className="w-1.5 h-1.5 rounded-full bg-premiumText-muted mt-1.5 shrink-0" />
                                 {item}
                               </li>
                             ))}
@@ -294,9 +293,9 @@ const EndToEnd = () => {
               </div>
 
               {/* Editorial Legal Section */}
-              <div className="mt-24 max-w-2xl mx-auto text-center border-t border-premium-border pt-12">
+              <div className="mt-24 max-w-2xl mx-auto text-center border-t border-premiumNeutral pt-12">
                 <span className="label-uppercase mb-4">Medical Advisory</span>
-                <p className="text-[10px] font-bold text-premium-text-muted leading-loose uppercase tracking-[0.2em]">
+                <p className="text-[10px] font-bold text-premiumText-muted leading-loose uppercase tracking-[0.2em]">
                   {result.recommendations.disclaimer}
                 </p>
               </div>

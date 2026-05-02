@@ -31,8 +31,8 @@ const NER = () => {
     <div className="flex flex-col gap-16 max-w-5xl mx-auto py-12 fade-in">
       <div className="text-center space-y-6">
         <span className="label-uppercase tracking-[0.5em]">Linguistic Analysis</span>
-        <h1 className="text-6xl font-display text-premium-burgundy italic">Clinical Extraction</h1>
-        <p className="text-premium-text-secondary font-medium uppercase tracking-widest text-[10px]">
+        <h1 className="text-6xl font-display text-premiumPrimary italic">Clinical Extraction</h1>
+        <p className="text-premiumText-secondary font-medium uppercase tracking-widest text-[10px]">
           Structured medical entity identification using BioClinicalBERT architectures.
         </p>
       </div>
@@ -42,12 +42,12 @@ const NER = () => {
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder="Paste medical text for taxonomy extraction..."
-          className="w-full min-h-[200px] bg-premium-bg border border-premium-border p-8 text-sm font-sans text-premium-text-primary focus:outline-none focus:border-premium-burgundy transition-all duration-500 leading-relaxed resize-none"
+          className="w-full min-h-[200px] bg-premiumBg border border-premiumNeutral p-8 text-sm font-sans text-premiumText-primary focus:outline-none focus:border-premiumPrimary transition-all duration-500 leading-relaxed resize-none"
         />
         
         {error && (
-          <div className="mt-6 p-4 border border-premium-accent bg-premium-accent/5 text-premium-accent text-[10px] font-bold uppercase tracking-widest flex items-center gap-3">
-             <span className="w-1.5 h-1.5 rounded-full bg-premium-accent" />
+          <div className="mt-6 p-4 border border-premiumAccent bg-premiumAccent/5 text-premiumAccent text-[10px] font-bold uppercase tracking-widest flex items-center gap-3">
+             <span className="w-1.5 h-1.5 rounded-full bg-premiumAccent" />
              {error}
           </div>
         )}
@@ -56,7 +56,7 @@ const NER = () => {
            <button
             onClick={handleExtract}
             disabled={loading || !text}
-            className="premium-btn flex items-center gap-3"
+            className="premiumBtn flex items-center gap-3"
           >
             {loading ? <Loader2 size={16} className="animate-spin" /> : <Search size={16} />}
             {loading ? 'Analyzing...' : 'Run Extraction'}
@@ -74,7 +74,7 @@ const NER = () => {
                   {items.length > 0 ? items.map((item, i) => (
                     <EntityTag key={i} label={item} category={category} />
                   )) : (
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-premium-text-muted italic">No instances detected</span>
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-premiumText-muted italic">No instances detected</span>
                   )}
                 </div>
               </Card>

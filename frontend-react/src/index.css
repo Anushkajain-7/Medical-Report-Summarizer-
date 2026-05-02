@@ -3,7 +3,7 @@
 
 @layer base {
   body {
-    @apply bg-premium-bg text-premium-text-primary font-sans antialiased;
+    @apply bg-premiumBg text-premiumText-primary font-sans antialiased;
     margin: 0;
   }
   
@@ -13,20 +13,20 @@
 }
 
 @layer components {
-  .premium-btn {
-    @apply bg-premium-burgundy text-white px-8 py-3 rounded-none font-sans font-semibold uppercase tracking-widest text-xs transition-all duration-500 hover:bg-premium-maroon hover:translate-y-[-2px] disabled:opacity-50 disabled:translate-y-0 shadow-lg;
+  .premiumBtn {
+    @apply bg-premiumPrimary text-white px-8 py-3 rounded-none font-sans font-semibold uppercase tracking-widest text-xs transition-all duration-500 hover:bg-premiumAccent hover:translate-y-[-2px] disabled:opacity-50 disabled:translate-y-0 shadow-lg;
   }
   
-  .premium-card {
-    @apply bg-white rounded-none border border-premium-border shadow-sm transition-all duration-700 hover:shadow-xl;
+  .premiumCard {
+    @apply bg-white rounded-none border border-premiumNeutral shadow-sm transition-all duration-700 hover:shadow-xl;
   }
 
-  .premium-divider {
-    @apply border-t border-premium-border opacity-50;
+  .premiumDivider {
+    @apply border-t border-premiumNeutral opacity-50;
   }
 
   .label-uppercase {
-    @apply text-[10px] font-bold uppercase tracking-[0.25em] text-premium-text-muted mb-2 block;
+    @apply text-[10px] font-bold uppercase tracking-[0.25em] text-premiumText-muted mb-2 block;
   }
 
   /* Custom scrollbar */
@@ -37,7 +37,7 @@
     background: #f1f1f1;
   }
   .scrollbar::-webkit-scrollbar-thumb {
-    @apply bg-premium-border transition-colors hover:bg-premium-text-muted;
+    @apply bg-premiumNeutral transition-colors hover:bg-premiumText-muted;
   }
 }
 
