@@ -161,7 +161,7 @@ For every report analyzed, the platform generates a multi-dimensional response:
 
 ---
 
-## 🚀 Limitations & Future Work
+## Limitations & Future Work
 
 ### Current Limitations
 - **Model Hallucination:** Abstractive summaries can occasionally misinterpret technical nuances. We mitigate this with a deterministic rule-based verification layer.
@@ -181,7 +181,7 @@ For a deep dive into the underlying architectures, attention mechanisms, and mod
 
 ---
 
-## 📈 Final Model Metrics & Evaluation
+## Final Model Metrics & Evaluation
 
 We evaluated each component of the pipeline using standard NLP metrics to ensure both technical rigor and clinical utility.
 
