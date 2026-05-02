@@ -1,141 +1,136 @@
-Medical Report Intelligence Platform
+# Medical Report Intelligence Platform
 
-Built by Sai Venkat and Anushka Jain.
+**A Narrative-Aware Clinical Reasoning System for Patient-Centric Interpretation**
 
-Overview
+Developed by **Sai Venkat** and **Anushka Jain**
 
-The Medical Report Intelligence Platform is an advanced healthcare AI system designed to transform complex clinical reports into clear, structured, and actionable insights for end users.
+---
 
-Instead of simply summarizing text, this system performs clinical reasoning, interprets medical narratives, detects key health patterns, and provides practical guidance such as what the report means, what actions to take, and what precautions to follow.
+## 🏥 Overview
 
-The goal is to bridge the gap between technical medical data and human understanding.
+The **Medical Report Intelligence Platform** is a state-of-the-art healthcare AI solution designed to bridge the interpretability gap in clinical documentation. Unlike standard text summarizers, this platform performs deep clinical reasoning to transform unstructured medical reports (PDF, DOCX, TXT) into structured, actionable, and human-readable health intelligence.
 
-Problem Statement
+The system interprets technical medical narratives just as a clinical expert would—simplifying jargon, triaging severity, and providing proactive guidance on next steps, lifestyle adjustments, and potential risks.
 
-Medical reports are often difficult for non-medical users to understand. They contain complex terminology, raw lab values, and fragmented clinical observations.
+---
 
-This platform solves that problem by interpreting the report like a human expert, simplifying medical language, and generating structured insights and actionable guidance.
+## 🚀 Core Pillars
 
-What This System Does
+### 🧠 Narrative-Aware Reasoning
+The engine doesn't just extract keywords; it evaluates the entire clinical story. By analyzing the relationship between symptoms, procedures, and findings, it identifies the dominant medical domain (e.g., Cardiac, Vascular, Oncology) and accurately triages the severity of the report.
 
-The system accepts medical reports in PDF, DOCX, or TXT format. It extracts and processes clinical text, performs summarization using BART and LSTM models, and applies Clinical Named Entity Recognition using BioClinicalBERT. It then analyzes the report context, identifies conditions and severity, and generates human-readable explanations along with guidance such as what to do, what to avoid, dietary suggestions, and warning signs.
+### 🔍 Clinical Named Entity Recognition (NER)
+Powered by **BioClinicalBERT**, the system extracts four critical taxonomies:
+- **Diseases & Conditions**
+- **Medications & Dosages**
+- **Symptoms & Observations**
+- **Medical Procedures & Treatments**
 
-Key Features
+### 📋 Proactive Intelligence
+Beyond the summary, the platform generates a comprehensive care plan:
+- **What this means:** A plain-language explanation of the findings.
+- **Action Plan:** Concrete "Do's" and "Avoid's" based on the clinical context.
+- **Dietary Guidance:** Condition-specific nutritional recommendations.
+- **Red Flags:** Urgent warning signs that require immediate medical attention.
 
-Narrative-Aware Reasoning: Understands the complete clinical story instead of relying only on keywords.
+---
 
-Clinical NER: Extracts Diseases, Drugs, Symptoms, and Treatments using BioClinicalBERT.
+## 🛠️ Technology Stack
 
-Intelligent Summarization: Uses BART and custom LSTM models to generate structured summaries.
+| Layer | Technologies |
+| :--- | :--- |
+| **Backend** | Python, FastAPI, Uvicorn |
+| **Deep Learning** | PyTorch, Custom LSTM Seq2Seq with Bahdanau Attention |
+| **NLP** | Hugging Face Transformers, BART-Large-CNN, BioClinicalBERT |
+| **Frontend** | React 19, Vite, Tailwind CSS 4 |
+| **Visualization** | Chart.js, Lucide React |
 
-Severity Detection: Identifies critical medical conditions and prioritizes risk.
+---
 
-Actionable Guidance: Provides clear next steps including lifestyle recommendations, diet suggestions, and precautions.
+## 📂 Project Structure
 
-Tech Stack
+```text
+Medical-Report-Summarizer/
+├── backend/                # FastAPI Application & Model Pipelines
+│   ├── models/             # Custom LSTM Seq2Seq Implementation
+│   ├── pipeline/           # BART Summarization & Clinical NER
+│   └── utils/              # File Extractors & RAG Chunkers
+├── frontend-react/         # Modern React Dashboard
+├── api/                    # Core API Utilities
+├── NLP_DEEP_LEARNING.md    # Technical Model Documentation
+├── requirements.txt        # Backend Dependencies
+└── run.bat                 # Automation Script (Optional)
+```
 
-Backend: FastAPI, Python
-NLP Models: BART, BioClinicalBERT, LSTM Seq2Seq
-Frontend: React (Vite) with Tailwind CSS
-APIs: Hugging Face Inference API
+---
 
-Project Structure
+## ⚙️ Installation & Setup
 
-Medical-Report-Summarizer--main/
-backend/ – FastAPI backend
-frontend-react/ – React frontend
-api/ – API utilities
-NLP_DEEP_LEARNING.md – Model documentation
-requirements.txt
-run.bat (optional)
+### Prerequisites
+- Python 3.9 - 3.11
+- Node.js (v18+) & npm
 
-Installation and Setup
-Prerequisites
-
-Python 3.9 to 3.11
-Node.js (v16 or higher)
-npm
-
-Backend Setup
-
-Navigate to backend folder:
-
+### 1. Backend Configuration
+Navigate to the `backend` directory and set up the environment:
+```powershell
 cd backend
-
-Create virtual environment:
-
 python -m venv .venv
-
-Activate environment (Windows):
-
 .venv\Scripts\activate
-
-Install dependencies:
-
 pip install -r requirements.txt
+```
 
-Environment Variables
-
-Create a .env file inside the backend folder and add:
-
+**Environment Variables:**
+Create a `.env` file in the `backend` folder:
+```env
 HF_API_TOKEN=your_huggingface_token_here
+```
 
-Frontend Setup
-
-Navigate to frontend folder:
-
+### 2. Frontend Configuration
+Navigate to the `frontend-react` directory and install dependencies:
+```powershell
 cd frontend-react
-
-Install dependencies:
-
 npm install
+```
 
-Running the Project (Recommended Method)
-Start Backend
+---
 
+## 🚦 Execution
+
+For the best experience, run the backend and frontend in separate terminals:
+
+**Terminal 1 (Backend):**
+```powershell
 cd backend
 uvicorn app:app --reload
+```
 
-If this fails, try:
-
-uvicorn main:app --reload
-
-Start Frontend (in a new terminal)
-
+**Terminal 2 (Frontend):**
+```powershell
 cd frontend-react
 npm run dev
+```
 
-Access the Application
+The application will be available at **`http://localhost:5173`**.
 
-Frontend: http://localhost:5173
+---
 
-Backend: http://localhost:8000
+## 📊 Pipeline Flow & Output
 
-Important Note
+For every report analyzed, the platform generates a multi-dimensional response:
+1. **Technical Summary:** A concise clinical abstract using BART.
+2. **Simplified Explanation:** A narrative story for the patient.
+3. **Structured Findings:** Categorized lists of detected conditions and drugs.
+4. **Care Guidance:** Actionable advice on diet, activity, and precautions.
+5. **Severity Triage:** Real-time classification (Critical, Serious, Moderate, Normal).
 
-A run.bat file is included, but it may not work reliably depending on your environment or PowerShell configuration. It is recommended to run backend and frontend manually as shown above.
+---
 
-Output Format
+## ⚠️ Disclaimer
 
-For each uploaded report, the system generates:
+**This system is for informational and educational purposes only.** It is not a substitute for professional medical advice, diagnosis, or treatment. Always seek the advice of your physician or other qualified health provider with any questions you may have regarding a medical condition.
 
-Technical summary
-Plain-language explanation
-Detected conditions
-Key findings
-Recommended actions
-Things to avoid
-Diet guidance
-Warning signs
-Limitations
+---
 
-The system uses proxy datasets such as CNN/DailyMail for summarization. Clinical NER may not capture all rare or edge-case conditions. The guidance provided is informational and not a medical diagnosis.
-
-Disclaimer
-
-This system is for informational purposes only. It is not a substitute for professional medical advice, diagnosis, or treatment. Always consult a qualified healthcare provider.
-
-Technical Documentation
-
-Refer to NLP_DEEP_LEARNING.md for detailed explanation of models, architectures, and implementation.
-
+## 📄 Documentation
+For a deep dive into the underlying architectures, attention mechanisms, and model training details, refer to:
+👉 **[NLP_DEEP_LEARNING.md](./NLP_DEEP_LEARNING.md)**
