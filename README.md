@@ -25,29 +25,31 @@ Navigate to **http://localhost:5173**
 
 ---
 
-## 📂 Project Structure
+## Project Structure
 
 ```
 Medical-report-summerizer/
+├── api/
+│   └── index.py                        # Vercel entry point
 ├── backend/
 │   ├── app.py                          # FastAPI main application
-│   ├── .env                            # HuggingFace API token
-│   ├── requirements.txt                # Python dependencies
+│   ├── .env                            # HuggingFace API token (ignored)
+│   ├── requirements.txt                # Python dependencies (local)
 │   ├── models/
 │   │   └── lstm_seq2seq.py             # LSTM Seq2Seq + Bahdanau Attention
 │   ├── pipeline/
 │   │   ├── bart_summarizer.py          # BART summarization (HuggingFace API)
 │   │   ├── clinical_ner.py             # BERT NER + keyword extraction
 │   │   └── rouge_eval.py              # ROUGE metric computation
-│   ├── train/
-│   │   └── train_lstm.py              # LSTM training script (CNN/DailyMail)
 │   └── utils/
 │       ├── file_extractor.py          # PDF/DOCX/TXT extraction
 │       └── rag_chunker.py            # RAG text chunking
-└── frontend/
-    ├── index.html                     # Main HTML
-    ├── style.css                      # Premium dark theme CSS
-    └── app.js                         # Frontend JavaScript
+├── frontend/
+│   ├── index.html                     # Main HTML
+│   ├── style.css                      # Premium dark theme CSS
+│   └── app.js                         # Frontend JavaScript
+├── requirements.txt                    # Vercel optimized dependencies
+└── vercel.json                        # Vercel configuration
 ```
 
 ## Pipeline Architecture
