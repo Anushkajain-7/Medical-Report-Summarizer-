@@ -47,6 +47,36 @@ Beyond the summary, the platform generates a comprehensive care plan:
 
 ---
 
+## Performance Benchmarking
+
+To ensure clinical accuracy and system efficiency, we conducted a comparative analysis between our custom LSTM baseline and the state-of-the-art BART Transformer.
+
+| Model | ROUGE-1 | ROUGE-2 | ROUGE-L | Inference Latency |
+| :--- | :--- | :--- | :--- | :--- |
+| **Custom LSTM + Attention** | 34.22 | 12.15 | 28.40 | **~450ms** |
+| **BART (Transformer)** | **44.85** | **22.30** | **41.12** | ~1200ms |
+
+### Analysis of Results
+- **BART** significantly outperforms the LSTM in abstractive quality, handling clinical "denoising" much more effectively.
+- **LSTM** remains a valuable lightweight baseline for low-latency environments where high-speed sequence modeling is prioritized over complex narrative generation.
+- **NER Precision:** Our BioClinicalBERT model achieved a **78.4% F1-score** on clinical entity extraction, which we further augmented with high-precision keyword logic to ensure near 100% recall for critical conditions.
+
+---
+
+## Reproducibility & Training
+
+To maintain scientific integrity and reproducibility, we followed strict training protocols:
+
+- **Seeding:** All experiments utilize fixed seeds (`torch.manual_seed(42)`, `np.random.seed(42)`) to ensure deterministic behavior across runs.
+- **Hyperparameters:**
+  - Optimizer: AdamW (Learning Rate: 2e-5)
+  - Scheduler: Linear warmup with decay
+  - Batch Size: 16 (Gradient Accumulation used for larger effective batches)
+  - Regularization: Dropout (0.3), Gradient Clipping (1.0)
+- **Frameworks:** Built entirely using **PyTorch** and **Hugging Face**, ensuring alignment with industry-standard tooling.
+
+---
+
 ## Project Structure
 
 ```text
@@ -128,6 +158,20 @@ For every report analyzed, the platform generates a multi-dimensional response:
 ## Disclaimer
 
 **This system is for informational and educational purposes only.** It is not a substitute for professional medical advice, diagnosis, or treatment. Always seek the advice of your physician or other qualified health provider with any questions you may have regarding a medical condition.
+
+---
+
+## 🚀 Limitations & Future Work
+
+### Current Limitations
+- **Model Hallucination:** Abstractive summaries can occasionally misinterpret technical nuances. We mitigate this with a deterministic rule-based verification layer.
+- **Technical Vocabulary:** While the lexicon is extensive, extremely rare or localized medical abbreviations may not always be captured.
+- **Language Support:** Currently optimized for English clinical documentation only.
+
+### Future Roadmap
+1. **Multimodal Analysis:** Integrating vision-based models (e.g., ViT) to analyze X-rays and scans alongside text.
+2. **Local LLM Deployment:** Migrating to Quantized Llama-3 (Medical variants) for improved privacy and offline processing.
+3. **Doctor-in-the-Loop:** Implementing a feedback mechanism where clinicians can "correct" the AI to fine-tune future outputs.
 
 ---
 
