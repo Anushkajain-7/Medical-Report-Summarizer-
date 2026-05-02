@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import { analyzeReport } from '../services/api';
-import { Activity, FileText, Sparkles, Database, Stethoscope, ArrowRight, Clock, Hash, Percent } from 'lucide-react';
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
-import { Bar } from 'react-chartjs-2';
+import { ArrowRight, Info, ShieldAlert, Utensils, Footprints, Pill, AlertCircle, FileText, CheckCircle2 } from 'lucide-react';
 
 // UI Components
 import Card from '../components/ui/Card';
@@ -10,8 +8,6 @@ import EntityTag from '../components/ui/EntityTag';
 import StatusStepper from '../components/ui/StatusStepper';
 import LoadingSkeleton from '../components/ui/LoadingSkeleton';
 import FileUpload from '../components/ui/FileUpload';
-
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 const EndToEnd = () => {
   const [file, setFile] = useState(null);
@@ -22,19 +18,20 @@ const EndToEnd = () => {
 
   const handleAnalyze = async () => {
     if (!file) {
-      setError('Please deposit a clinical document before initiating analysis.');
+      setError('Please upload your medical report to begin.');
       return;
     }
 
     setLoading(true);
     setError(null);
     setResult(null);
-    setCurrentStep(2);
+    setCurrentStep(1);
 
     try {
+      // Simulate pipeline progression
       const progression = setInterval(() => {
         setCurrentStep(prev => prev < 4 ? prev + 1 : prev);
-      }, 2000);
+      }, 1200);
 
       const data = await analyzeReport(file, null);
       
@@ -42,38 +39,10 @@ const EndToEnd = () => {
       setCurrentStep(5);
       setResult(data);
     } catch (err) {
-      setError(err.message || 'The neural pipeline encountered a processing error.');
+      setError(err.message || 'The assistant encountered an error processing your report.');
       setCurrentStep(1);
     } finally {
       setLoading(false);
-    }
-  };
-
-  const getChartData = () => {
-    if (!result?.entities) return null;
-    const categories = ['DISEASE', 'DRUG', 'SYMPTOM', 'TREATMENT'];
-    const counts = categories.map(cat => result.entities[cat]?.length || 0);
-    
-    return {
-      labels: categories,
-      datasets: [
-        {
-          data: counts,
-          backgroundColor: ['#4a0e0e', '#800000', '#b22222', '#1a1a1a'],
-          borderWidth: 0,
-          barThickness: 20,
-        },
-      ],
-    };
-  };
-
-  const chartOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: { legend: { display: false } },
-    scales: {
-      y: { display: false },
-      x: { grid: { display: false }, ticks: { font: { family: 'Inter', size: 10, weight: 'bold' }, color: '#8e8e8e' } }
     }
   };
 
@@ -83,14 +52,14 @@ const EndToEnd = () => {
       {/* 1. Hero / Ingest Section */}
       <section className="flex flex-col items-center text-center max-w-5xl mx-auto gap-12 fade-in">
         <div className="flex flex-col gap-6">
-          <span className="label-uppercase tracking-[0.6em]">MedReport Intelligence Platform</span>
-          <h1 className="text-7xl lg:text-9xl font-display text-premiumPrimary leading-[0.9] tracking-tighter">
-            Synthesize Clinical <br />
-            <span className="italic">Complexity.</span>
+          <span className="label-uppercase tracking-[0.6em]">Proactive Health Assistant</span>
+          <h1 className="text-7xl lg:text-8xl font-display text-premiumPrimary leading-[0.9] tracking-tighter">
+            Decode Your <br />
+            <span className="italic text-premiumAccent">Medical Story.</span>
           </h1>
           <p className="text-xl font-sans text-premiumText-secondary max-w-2xl mx-auto leading-relaxed mt-4">
-            An advanced AI engine designed to ingest unstructured clinical reports, generate high-fidelity summaries, 
-            and extract structured medical intelligence with professional precision.
+            Transform complex clinical reports into a clear, understandable plan. 
+            Analyze labs, symptoms, and findings to understand what comes next.
           </p>
         </div>
 
@@ -108,18 +77,18 @@ const EndToEnd = () => {
               disabled={loading || !file}
               className="premiumBtn flex items-center gap-4 group"
             >
-              Initiate Analysis
+              Understand My Report
               <ArrowRight size={16} className="transition-transform duration-500 group-hover:translate-x-2" />
             </button>
           </div>
         </div>
       </section>
 
-      {/* 2. Pipeline Visualization */}
+      {/* 2. Assistant Status */}
       {(loading || result) && (
         <section className="max-w-4xl mx-auto w-full slide-up">
           <div className="text-center mb-8">
-            <span className="label-uppercase">Workflow Progression</span>
+            <span className="label-uppercase">Inference Pipeline Active</span>
           </div>
           <StatusStepper currentStep={currentStep} />
         </section>
@@ -128,179 +97,142 @@ const EndToEnd = () => {
       {/* 3. Loading State */}
       {loading && <LoadingSkeleton />}
 
-      {/* 4. Results Section (Editorial Grid) */}
+      {/* 4. Interpretation Results */}
       {result && !loading && (
-        <section className="flex flex-col gap-24 animate-in fade-in slide-in-from-bottom-12 duration-1000">
+        <section className="flex flex-col gap-20 animate-in fade-in slide-in-from-bottom-12 duration-1000">
           
-          {/* Metadata Bar */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-px bg-premiumNeutral border border-premiumNeutral">
-            {[
-              { label: 'Processing Latency', value: `${result.processing_time}s`, icon: Clock },
-              { label: 'Character Volume', value: result.input_length, icon: Hash },
-              { label: 'Summary Density', value: `${((result.summary_length / result.input_length) * 100).toFixed(1)}%`, icon: Percent },
-              { label: 'Intelligence Model', value: result.summary_model, icon: Sparkles },
-            ].map((stat, i) => (
-              <div key={i} className="bg-white p-8 flex flex-col gap-2">
-                <stat.icon size={14} className="text-premiumText-muted mb-2" />
-                <span className="label-uppercase mb-0">{stat.label}</span>
-                <span className="text-3xl font-display text-premiumPrimary">{stat.value}</span>
-              </div>
-            ))}
+          {/* Main Interpretation Header */}
+          <div className="flex flex-col items-center text-center gap-4">
+             <span className="label-uppercase">Primary Clinical Pattern Identified</span>
+             <h2 className="text-5xl lg:text-7xl font-display text-premiumPrimary italic">
+               {result.interpretation.status_label}
+             </h2>
           </div>
 
-          {/* Main Content Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
             
-            {/* Left: Source Text (Editorial Frame) */}
-            <div className="lg:col-span-4 h-[700px] flex">
-              <Card title="Source Manuscript" subtitle="Original Record" className="w-full flex-1 border-r-0">
-                <div className="font-sans text-xs text-premiumText-secondary leading-[2] text-justify space-y-6">
-                  {result.raw_text.split('\n').map((para, i) => (
-                    <p key={i}>{para}</p>
-                  ))}
-                </div>
-              </Card>
-            </div>
-
-            {/* Middle: Intelligence Output (Premium Centerpiece) */}
-            <div className="lg:col-span-5 h-[700px] flex">
+            {/* Left: Interpretation & Care Plan */}
+            <div className="lg:col-span-8 flex flex-col gap-8">
+              
+              {/* Understanding Section */}
               <Card 
-                title="Clinical Abstract" 
-                subtitle="Synthesized Summary" 
-                className="w-full flex-1 border-x border-premiumNeutral shadow-2xl relative z-10"
+                title="What This Suggests" 
+                subtitle="Patient-Centric Interpretation" 
+                className="shadow-2xl border-premiumAccent/10"
+                icon={Info}
               >
-                <div className="text-xl font-display text-premiumPrimary leading-relaxed first-letter:text-5xl first-letter:font-display first-letter:mr-3 first-letter:float-left italic">
-                  {result.summary}
+                <div className="text-2xl font-display text-premiumPrimary leading-relaxed mb-8 border-l-4 border-premiumAccent pl-8 italic">
+                  "{result.interpretation.simple_explanation}"
                 </div>
                 
-                <div className="mt-16 pt-16 border-t border-premiumNeutral space-y-8">
-                  <div className="flex flex-col gap-4">
-                    <span className="label-uppercase">Summary Confidence</span>
-                    <div className="h-1 bg-premiumBg w-full">
-                      <div className="h-full bg-premiumAccent w-[94%]" />
-                    </div>
-                  </div>
+                <div className="mt-12 space-y-6">
+                   <h5 className="label-uppercase">Critical Indicators to Monitor (Red Flags)</h5>
+                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {result.interpretation.red_flags.map((flag, i) => (
+                        <div key={i} className="flex items-center gap-3 p-4 bg-premiumAccent/5 border border-premiumAccent/10 text-xs font-bold text-premiumPrimary uppercase tracking-wide">
+                           <AlertCircle size={14} className="text-premiumAccent" />
+                           {flag}
+                        </div>
+                      ))}
+                   </div>
                 </div>
               </Card>
+
+              {/* Comprehensive Care Plan */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                 {/* What to Do */}
+                 <Card title="Immediate Actions" subtitle="Next Steps" icon={CheckCircle2}>
+                    <ul className="space-y-4">
+                      {result.interpretation.care_plan.do.map((item, i) => (
+                        <li key={i} className="text-sm font-medium text-premiumText-primary flex items-start gap-4">
+                          <span className="w-1.5 h-1.5 rounded-full bg-premiumPrimary mt-1.5 shrink-0" />
+                          {item}
+                        </li>
+                      ))}
+                    </ul>
+                 </Card>
+
+                 {/* Nutrition */}
+                 <Card title="Nutritional Guidance" subtitle="Food Intelligence" icon={Utensils}>
+                    <div className="space-y-6">
+                       <div>
+                          <span className="text-[9px] font-bold uppercase text-emerald-700 mb-2 block tracking-widest">Helpful Choices</span>
+                          <p className="text-xs font-bold leading-relaxed">{result.interpretation.care_plan.diet_recommended.join(' • ')}</p>
+                       </div>
+                       <div className="pt-4 border-t border-premiumNeutral">
+                          <span className="text-[9px] font-bold uppercase text-premiumAccent mb-2 block tracking-widest">Suggested Limits</span>
+                          <p className="text-xs font-bold leading-relaxed">{result.interpretation.care_plan.diet_restricted.join(' • ')}</p>
+                       </div>
+                    </div>
+                 </Card>
+
+                 {/* Avoid */}
+                 <Card title="Precautions" subtitle="What to Avoid" icon={ShieldAlert}>
+                    <ul className="space-y-4">
+                      {result.interpretation.care_plan.avoid.map((item, i) => (
+                        <li key={i} className="text-sm font-medium text-premiumText-primary flex items-start gap-4">
+                          <span className="w-1.5 h-1.5 rounded-full bg-premiumAccent mt-1.5 shrink-0" />
+                          {item}
+                        </li>
+                      ))}
+                    </ul>
+                 </Card>
+
+                 {/* Lifestyle */}
+                 <Card title="Daily Habits" subtitle="Lifestyle Support" icon={Footprints}>
+                    <ul className="space-y-4">
+                      {result.interpretation.care_plan.lifestyle.map((item, i) => (
+                        <li key={i} className="text-sm font-medium text-premiumText-secondary flex items-start gap-4">
+                          <span className="w-1.5 h-1.5 rounded-full bg-premiumNeutral mt-1.5 shrink-0" />
+                          {item}
+                        </li>
+                      ))}
+                    </ul>
+                 </Card>
+              </div>
             </div>
 
-            {/* Right: Taxonomy Extraction */}
-            <div className="lg:col-span-3 h-[700px] flex">
-              <Card title="Taxonomy" subtitle="Entity Extraction" className="w-full flex-1 border-l-0">
-                <div className="flex flex-col gap-10">
-                  {['DISEASE', 'DRUG', 'SYMPTOM', 'TREATMENT'].map(category => {
-                    const items = result.entities[category] || [];
-                    if (items.length === 0) return null;
+            {/* Right: Detected Context & Professional Summary */}
+            <div className="lg:col-span-4 flex flex-col gap-8">
+              
+              {/* Professional Abstract */}
+              <Card title="Clinical Summary" subtitle="For Medical Review" icon={FileText}>
+                 <p className="text-xs font-medium text-premiumText-secondary leading-relaxed font-sans italic">
+                    "{result.technical_summary}"
+                 </p>
+              </Card>
+
+              {/* Identified Findings */}
+              <Card title="Identified Context" subtitle="Detected Information" icon={Pill} className="flex-1">
+                <div className="flex flex-col gap-8">
+                  {Object.entries(result.findings).map(([category, items]) => {
+                    if (!items || items.length === 0) return null;
                     return (
                       <div key={category} className="flex flex-col gap-4">
-                        <h4 className="text-[10px] font-bold text-premiumText-muted uppercase tracking-[0.3em] border-b border-premiumNeutral pb-2">
+                        <h4 className="label-uppercase border-b border-premiumNeutral pb-2">
                           {category}
                         </h4>
                         <div className="flex flex-wrap gap-2">
                           {items.map((item, idx) => (
-                            <EntityTag key={idx} label={item} category={category} />
+                            <EntityTag key={idx} label={item} category={category.toUpperCase()} />
                           ))}
                         </div>
                       </div>
                     );
                   })}
-                  
-                  <div className="mt-8 pt-8 border-t border-premiumNeutral h-[180px]">
-                    <span className="label-uppercase mb-6">Distribution</span>
-                    <Bar data={getChartData()} options={chartOptions} />
-                  </div>
                 </div>
               </Card>
+
             </div>
           </div>
 
-          {/* 5. Clinical Recommendations (The "Trusted Card") */}
-          {result.recommendations && Object.keys(result.recommendations.conditions).length > 0 && (
-            <div className="mt-12 slide-up">
-              <div className="flex flex-col gap-4 mb-12 items-center text-center">
-                <span className="label-uppercase">Expert Analysis</span>
-                <h2 className="text-5xl font-display text-premiumPrimary">Clinical Action Guidance</h2>
-              </div>
-
-              <div className="grid grid-cols-1 gap-12">
-                {Object.entries(result.recommendations.conditions).map(([disease, recs], idx) => (
-                  <div key={idx} className="bg-white border border-premiumNeutral overflow-hidden flex flex-col lg:flex-row shadow-xl">
-                    {/* Left Disease Branding */}
-                    <div className="lg:w-1/4 bg-premiumPrimary text-white p-12 flex flex-col justify-between">
-                      <div className="flex flex-col gap-4">
-                         <span className="text-[10px] font-bold uppercase tracking-[0.4em] opacity-40">Target Condition</span>
-                         <h3 className="text-4xl font-display leading-tight italic">{disease.toLowerCase()}</h3>
-                      </div>
-                      <Stethoscope size={48} strokeWidth={1} className="opacity-20" />
-                    </div>
-
-                    {/* Right Recommendations Content */}
-                    <div className="lg:w-3/4 p-12 grid grid-cols-1 md:grid-cols-2 gap-16">
-                      <div className="flex flex-col gap-10">
-                        <div className="space-y-4">
-                          <h5 className="label-uppercase text-emerald-700">Protocols</h5>
-                          <ul className="space-y-3">
-                            {recs.recommended_actions.map((item, i) => (
-                              <li key={i} className="text-sm font-medium text-premiumText-primary flex items-start gap-4">
-                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-1.5 shrink-0" />
-                                {item}
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                        <div className="space-y-4">
-                          <h5 className="label-uppercase text-premiumAccent">Contraindications</h5>
-                          <ul className="space-y-3">
-                            {recs.things_to_avoid.map((item, i) => (
-                              <li key={i} className="text-sm font-medium text-premiumText-primary flex items-start gap-4">
-                                <span className="w-1.5 h-1.5 rounded-full bg-premiumAccent mt-1.5 shrink-0" />
-                                {item}
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      </div>
-
-                      <div className="flex flex-col gap-10">
-                        <div className="bg-premiumBg p-8 border border-premiumNeutral space-y-6">
-                           <h5 className="label-uppercase text-premiumPrimary">Dietary Intelligence</h5>
-                           <div className="grid grid-cols-1 gap-6">
-                              <div>
-                                <span className="text-[9px] font-bold uppercase text-premiumText-muted mb-2 block tracking-widest">Recommended</span>
-                                <p className="text-xs font-bold leading-relaxed">{recs.diet_recommended.join(' • ')}</p>
-                              </div>
-                              <div className="pt-4 border-t border-premiumNeutral">
-                                <span className="text-[9px] font-bold uppercase text-premiumAccent mb-2 block tracking-widest">Restricted</span>
-                                <p className="text-xs font-bold leading-relaxed">{recs.diet_avoid.join(' • ')}</p>
-                              </div>
-                           </div>
-                        </div>
-                        <div className="space-y-4">
-                          <h5 className="label-uppercase text-premiumText-primary">Lifestyle Interventions</h5>
-                          <ul className="space-y-3">
-                            {recs.lifestyle.map((item, i) => (
-                              <li key={i} className="text-sm font-medium text-premiumText-secondary flex items-start gap-4">
-                                <span className="w-1.5 h-1.5 rounded-full bg-premiumText-muted mt-1.5 shrink-0" />
-                                {item}
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Editorial Legal Section */}
-              <div className="mt-24 max-w-2xl mx-auto text-center border-t border-premiumNeutral pt-12">
-                <span className="label-uppercase mb-4">Medical Advisory</span>
-                <p className="text-[10px] font-bold text-premiumText-muted leading-loose uppercase tracking-[0.2em]">
-                  {result.recommendations.disclaimer}
-                </p>
-              </div>
-            </div>
-          )}
+          {/* Safety Footer */}
+          <div className="mt-12 max-w-4xl mx-auto text-center p-12 border-2 border-premiumNeutral border-dashed">
+            <ShieldAlert size={32} className="mx-auto text-premiumAccent mb-6" />
+            <p className="text-[10px] font-bold text-premiumText-muted leading-loose uppercase tracking-[0.25em]">
+              {result.interpretation.disclaimer}
+            </p>
+          </div>
 
         </section>
       )}
