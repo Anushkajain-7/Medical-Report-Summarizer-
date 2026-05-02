@@ -1,177 +1,213 @@
 """
-Clinical Inference & Intelligence Layer
-Analyzes clinical patterns and provides proactive, patient-centric interpretation.
+Clinical Intelligence & Reasoning Engine (v5.0)
+Advanced multi-stage reasoning for patient-centric medical report interpretation.
 """
 
-from typing import Dict, List, Any, Set
+from typing import Dict, List, Any, Optional, Set
+import re
 
-# Medical Disclaimer - Mandatory
+# --- Constants & Disclaimers ---
 MEDICAL_DISCLAIMER = (
-    "DISCLAIMER: This analysis is provided by an AI clinical assistant for educational purposes. "
-    "It is NOT a medical diagnosis or a replacement for a doctor's evaluation. "
-    "If you are feeling unwell, seek professional medical help immediately."
+    "DISCLAIMER: This analysis is provided by an AI health assistant for educational purposes only. "
+    "It is NOT a medical diagnosis, clinical opinion, or replacement for professional care. "
+    "In case of emergency, call your local emergency services (e.g., 911) or visit the nearest ER immediately."
 )
 
-# 1. Pattern Definitions (Keywords/Entities that suggest a clinical concern)
-CLINICAL_PATTERNS = {
-    "INFECTION_INFLAMMATION": {
-        "keywords": ["WBC", "FEVER", "CRP", "PROCALCITONIN", "NEUTROPHILS", "INFECTION", "SEPSIS", "BACTERIAL", "VIRAL", "COUGH", "NAUSEA", "VOMITING", "CHILLS"],
-        "drugs": ["CEFTRIAXONE", "VANCOMYCIN", "AMOXICILLIN", "AZITHROMYCIN", "CIPROFLOXACIN", "ANTIBIOTIC"],
-        "label": "Infection or Inflammation",
-        "explanation": "The report suggests signs of an immune response, likely due to an infection or inflammation in the body. This is often indicated by elevated white blood counts (WBC) or markers like CRP.",
-        "red_flags": ["High fever over 103°F", "Confusion or disorientation", "Severe shivering", "Difficulty breathing"],
-        "guidance": {
-            "do": ["Stay hydrated with water and electrolytes.", "Get plenty of restorative rest.", "Complete any prescribed antibiotic courses exactly as directed."],
-            "avoid": ["Avoid intense physical activity.", "Limit contact with others if a contagious infection is suspected.", "Avoid alcohol while on medication."],
-            "diet": ["Clear soups and broths.", "Stay hydrated with clear fluids.", "Easily digestible foods like crackers or toast."],
-            "diet_avoid": ["Heavy, greasy foods.", "Spicy foods if experiencing nausea.", "Highly processed snacks."],
-            "lifestyle": ["Monitor your temperature every 4-6 hours.", "Practice good hand hygiene.", "Ensure a quiet, comfortable recovery environment."]
-        }
+# --- 1. Clinical Domains & Narrative Markers ---
+# We use a scoring system to determine the "Dominant Domain"
+DOMAINS = {
+    "VASCULAR_EMERGENCY": {
+        "label": "Critical Vascular Event",
+        "priority": 100, # Highest priority
+        "critical_markers": ["RUPTURE", "HEMORRHAGE", "ANEURYSM", "DISSECTION", "INTERNAL BLEEDING", "EMERGENCY SURGERY", "VASCULAR CONSULT", "FATAL", "EXPIRATION", "DEATH"],
+        "narrative_cues": ["PROGRESSED TO RUPTURE", "IDENTIFIED POST-MORTEM", "SURGICAL INTERVENTION REQUIRED", "ACUTE ONSET"],
+        "severity": "CRITICAL"
     },
-    "CARDIAC_CONCERN": {
-        "keywords": ["CHEST PAIN", "DYSPNEA", "SHORTNESS OF BREATH", "BNP", "TROPONIN", "BP", "BLOOD PRESSURE", "HYPERTENSION", "ANGINA", "HEART", "MURMUR", "PALPITATIONS", "EDEMA", "SWELLING"],
-        "drugs": ["LISINOPRIL", "AMLODIPINE", "ATORVASTATIN", "ASPIRIN", "NITROGLYCERIN", "FUROSEMIDE", "METOPROLOL", "CARVEDILOL"],
-        "label": "Cardiovascular Function",
-        "explanation": "The report indicates findings related to your heart or blood pressure. This could include markers of heart strain (like BNP/Troponin) or signs of fluid buildup and high blood pressure.",
-        "red_flags": ["Severe chest pressure or squeezing", "Pain spreading to the arm or jaw", "Sudden difficulty breathing while resting", "Sudden fainting or severe dizziness"],
-        "guidance": {
-            "do": ["Monitor your blood pressure and heart rate daily.", "Keep a record of any chest pain episodes.", "Take prescribed heart medications consistently."],
-            "avoid": ["Avoid heavy lifting or sudden intense strain.", "Limit salt (sodium) intake immediately.", "Avoid smoking and secondhand smoke."],
-            "diet": ["Leafy greens, fish, and nuts.", "Fresh fruits and vegetables.", "Whole grains (oats, brown rice)."],
-            "diet_avoid": ["Strictly limit salt (sodium) to less than 2,000mg per day.", "Avoid fried foods and trans fats.", "Limit red meat and high-fat dairy."],
-            "lifestyle": ["Engage in light, physician-cleared walking.", "Manage stress through deep breathing.", "Weigh yourself daily to monitor for sudden fluid buildup."]
-        }
+    "CARDIAC": {
+        "label": "Cardiovascular Condition",
+        "priority": 80,
+        "critical_markers": ["MYOCARDIAL INFARCTION", "HEART ATTACK", "UNSTABLE ANGINA", "CARDIAC ARREST", "SHOCK"],
+        "keywords": ["CHEST PAIN", "BNP", "TROPONIN", "ECG", "EKG", "STENOSIS", "ISCHEMIA", "CHF", "HEART FAILURE"],
+        "severity_map": {"SHOCK": "CRITICAL", "INFARCTION": "SERIOUS", "ANGINA": "SERIOUS", "CHF": "MODERATE"}
     },
-    "METABOLIC_SUGAR": {
-        "keywords": ["GLUCOSE", "HBA1C", "DIABETES", "SUGAR", "HYPERGLYCEMIA", "METABOLIC", "INSULIN", "POLYURIA", "THIRST", "FATIGUE"],
-        "drugs": ["METFORMIN", "SITAGLIPTIN", "INSULIN", "GLIPIZIDE", "EMPAGLIFLOZIN"],
-        "label": "Blood Sugar & Metabolism",
-        "explanation": "The findings suggest concerns with how your body processes sugar. High levels of glucose or HbA1c indicate that your blood sugar may be consistently above the ideal range.",
-        "red_flags": ["Extreme thirst and frequent urination", "Fruity-smelling breath", "Sudden blurred vision", "Extreme weakness or confusion"],
-        "guidance": {
-            "do": ["Monitor your blood sugar levels as recommended.", "Keep a log of your carbohydrate intake.", "Check your feet daily for any small cuts or sores."],
-            "avoid": ["Avoid skipping meals, which can cause sugar crashes.", "Avoid sugary snacks and sodas.", "Limit high-starch foods (potatoes, white bread)."],
-            "diet": ["High-fiber vegetables (broccoli, leafy greens).", "Lean proteins (chicken, fish, tofu).", "Lentils and beans."],
-            "diet_avoid": ["Avoid refined sugars and syrups.", "Limit white rice and pasta.", "Avoid fruit juices and energy drinks."],
-            "lifestyle": ["Engage in 20-30 minutes of light activity after meals.", "Ensure consistent sleep patterns.", "Stay hydrated with plain water."]
-        }
+    "INFECTION_SEPSIS": {
+        "label": "Infectious Disease / Sepsis",
+        "priority": 70,
+        "critical_markers": ["SEPSIS", "SEPTIC SHOCK", "MENINGITIS", "BACTEREMIA"],
+        "keywords": ["WBC", "FEVER", "CRP", "PROCALCITONIN", "NEUTROPHILS", "PNEUMONIA", "ABSCESS"],
+        "severity_map": {"SHOCK": "CRITICAL", "SEPSIS": "SERIOUS", "MENINGITIS": "SERIOUS"}
     },
-    "ANEMIA_BLOOD_CONCERN": {
-        "keywords": ["HEMOGLOBIN", "HGB", "ANEMIA", "FATIGUE", "PALLOR", "IRON", "B12", "FERRITIN", "BRUISING"],
-        "drugs": ["IRON SUPPLEMENT", "VITAMIN B12", "FOLATE", "EPOETIN"],
-        "label": "Blood Count & Oxygen",
-        "explanation": "The report shows findings related to your red blood cells or hemoglobin levels. This may suggest that your body is struggling to carry enough oxygen to your tissues, often causing fatigue.",
-        "red_flags": ["Severe shortness of breath with minimal effort", "Rapid or irregular heartbeat", "Severe dizziness or fainting", "Extreme, unexplained fatigue"],
-        "guidance": {
-            "do": ["Take prescribed iron or vitamin supplements.", "Combine iron-rich foods with Vitamin C for better absorption.", "Schedule a follow-up blood test to track progress."],
-            "avoid": ["Avoid drinking tea or coffee immediately after meals (as they block iron absorption).", "Avoid intense exercise until your levels improve."],
-            "diet": ["Lean red meat or fortified cereals.", "Spinach, kale, and legumes.", "Citrus fruits (to help absorb iron)."],
-            "diet_avoid": ["Limit processed snacks with zero nutritional value.", "Avoid excessive caffeine.", "Limit calcium supplements at the same time as iron-rich meals."],
-            "lifestyle": ["Pace your daily activities to conserve energy.", "Get up slowly from sitting or lying down to avoid dizziness.", "Ensure adequate rest."]
-        }
+    "TRAUMA_SURGICAL": {
+        "label": "Acute Trauma or Surgical Event",
+        "priority": 75,
+        "critical_markers": ["TRAUMA", "FRACTURE", "HEMORRHAGE", "LACERATION", "POST-OPERATIVE COMPLICATION"],
+        "keywords": ["PAIN", "SWELLING", "SURGERY", "PROCEDURE", "INTUBATION"],
+        "severity_map": {"HEMORRHAGE": "CRITICAL", "FRACTURE": "MODERATE"}
     },
-    "RESPIRATORY_CONCERN": {
-        "keywords": ["COUGH", "DYSPNEA", "SHORTNESS OF BREATH", "SPO2", "OXYGEN", "LUNG", "ASTHMA", "PNEUMONIA", "WHEEZING", "HEMOPTYSIS"],
-        "drugs": ["ALBUTEROL", "SYMBICORT", "PREDNISONE", "DEXAMETHASONE", "SPIRIVA"],
-        "label": "Respiratory & Lung Health",
-        "explanation": "The findings suggest concerns with your breathing or lung function. This could be due to temporary inflammation, chronic conditions like asthma, or acute issues like pneumonia.",
-        "red_flags": ["Struggling to catch your breath while resting", "Bluish tint to lips or fingernails", "Chest pain when breathing deeply", "Severe, persistent coughing"],
-        "guidance": {
-            "do": ["Use prescribed inhalers as directed.", "Practice pursed-lip breathing if you feel short of breath.", "Monitor your oxygen levels (SpO2) if a device is available."],
-            "avoid": ["Strictly avoid smoking and vaping.", "Avoid strong perfumes, smoke, or other lung irritants.", "Avoid very cold, dry air if it triggers coughing."],
-            "diet": ["Stay well-hydrated to help thin mucus.", "Small, frequent meals if large meals make it harder to breathe."],
-            "diet_avoid": ["Limit dairy if it increases mucus production for you.", "Avoid heavy, salt-rich foods that cause bloating."],
-            "lifestyle": ["Ensure your living area is free from dust and allergens.", "Keep your head elevated while sleeping.", "Engage in light, steady activity as tolerated."]
-        }
+    "NEUROLOGICAL": {
+        "label": "Neurological Event",
+        "priority": 85,
+        "critical_markers": ["STROKE", "CVA", "ANEURYSM", "HEMORRHAGE", "SEIZURE", "GCS"],
+        "keywords": ["CONFUSION", "HEADACHE", "STIFFNESS", "NEURO", "SYNCOPE"],
+        "severity_map": {"STROKE": "CRITICAL", "HEMORRHAGE": "CRITICAL", "SEIZURE": "SERIOUS"}
     },
-    "PAIN_INJURY_TRAUMA": {
-        "keywords": ["PAIN", "FRACTURE", "TRAUMA", "SWELLING", "EDEMA", "INJURY", "OSTEOARTHRITIS", "JOINT", "BONE", "LIMPING"],
-        "drugs": ["IBUPROFEN", "ACETAMINOPHEN", "NAPROXEN", "MORPHINE", "GABAPENTIN"],
-        "label": "Pain, Injury, or Bone Health",
-        "explanation": "The report discusses pain, injury, or concerns with your bones and joints. This may range from temporary muscle strain to more significant issues like fractures or chronic joint wear.",
-        "red_flags": ["Sudden, severe swelling in one limb", "Inability to bear weight on a limb", "Pain that is not relieved by rest or medication", "Numbness or tingling below an injury site"],
-        "guidance": {
-            "do": ["Follow the R.I.C.E. protocol (Rest, Ice, Compression, Elevation) for new injuries.", "Take pain relief medication as directed by your doctor.", "Use supports like braces or crutches if provided."],
-            "avoid": ["Avoid putting weight on an injured area until cleared.", "Avoid movements that increase sharp pain.", "Avoid 'pushing through' severe pain."],
-            "diet": ["Calcium-rich foods (yogurt, cheese, leafy greens) for bone health.", "Foods rich in Vitamin D.", "Anti-inflammatory foods like ginger or turmeric."],
-            "diet_avoid": ["Limit inflammatory foods like refined sugars.", "Avoid excessive alcohol, which can slow healing."],
-            "lifestyle": ["Alternate rest with gentle range-of-motion exercises if cleared.", "Apply heat or cold packs as recommended for your specific pain.", "Ensure your footwear provides proper support."]
-        }
+    "METABOLIC_ENDOCRINE": {
+        "label": "Metabolic or Endocrine Concern",
+        "priority": 50,
+        "critical_markers": ["KETOACIDOSIS", "DKA", "HYPOGLYCEMIA"],
+        "keywords": ["GLUCOSE", "HBA1C", "DIABETES", "THYROID", "METFORMIN"],
+        "severity_map": {"KETOACIDOSIS": "SERIOUS", "HYPOGLYCEMIA": "SERIOUS"}
     },
-    "WELLNESS_NORMAL": {
-        "label": "General Wellness & Monitoring",
-        "explanation": "Your report appears to show mostly stable or expected findings. Most markers checked are within or near the typical range for someone of your profile.",
-        "red_flags": ["New or worsening pain", "Unexplained weight loss", "Persistent fatigue that does not improve with rest", "Any sudden change in your usual health baseline"],
-        "guidance": {
-            "do": ["Continue your current healthy routines.", "Schedule your next routine check-up.", "Keep a simple log of how you feel day-to-day."],
-            "avoid": ["Avoid making major changes to your health routine without consulting a professional.", "Avoid excessive stress or overexertion."],
-            "diet": ["Maintain a balanced diet of whole foods.", "Stay hydrated with 8 glasses of water daily.", "Focus on a variety of colorful vegetables."],
-            "diet_avoid": ["Limit processed and fast foods.", "Avoid excessive sugar and salt.", "Limit saturated fats."],
-            "lifestyle": ["Aim for 150 minutes of moderate activity per week.", "Prioritize 7-9 hours of quality sleep.", "Practice daily stress-relief techniques like walking or reading."]
-        }
+    "ONCOLOGY": {
+        "label": "Oncological Findings",
+        "priority": 65,
+        "critical_markers": ["METASTASIS", "MALIGNANT", "CARCINOMA"],
+        "keywords": ["TUMOR", "MASS", "LESION", "BIOPSY", "CHEMOTHERAPY", "STAGE"],
+        "severity_map": {"METASTASIS": "SERIOUS", "MALIGNANT": "SERIOUS"}
     }
 }
 
-def infer_clinical_pattern(entities: Dict[str, List[str]], raw_text: str) -> Dict[str, Any]:
-    """
-    Analyzes extracted entities and raw text to infer the most likely clinical concern.
-    """
-    detected_patterns = []
-    
-    # Collect all evidence
-    all_evidence = set()
-    for cat in entities.values():
-        for item in cat:
-            all_evidence.add(item.upper().strip())
-    
-    # Check each pattern
-    for pid, pdata in CLINICAL_PATTERNS.items():
-        if pid == "WELLNESS_NORMAL": continue
-        
-        score = 0
-        # Check keywords
-        for kw in pdata.get("keywords", []):
-            if kw in all_evidence or kw in raw_text.upper():
-                score += 1
-        
-        # Check drugs
-        for drug in pdata.get("drugs", []):
-            if drug in all_evidence or drug in raw_text.upper():
-                score += 2 # Drugs are stronger indicators
-                
-        if score >= 2:
-            detected_patterns.append((pid, score))
-            
-    # Sort by score and pick top
-    detected_patterns.sort(key=lambda x: x[1], reverse=True)
-    
-    # If no pattern detected, return Wellness
-    if not detected_patterns:
-        return CLINICAL_PATTERNS["WELLNESS_NORMAL"]
-    
-    # Merge top patterns (if scores are close)
-    primary_pid = detected_patterns[0][0]
-    return CLINICAL_PATTERNS[primary_pid]
-
-def generate_intelligent_interpretation(entities: Dict[str, List[str]], raw_text: str) -> Dict[str, Any]:
-    """
-    Generates a human-readable interpretation and Care Plan based on clinical inference.
-    """
-    pattern = infer_clinical_pattern(entities, raw_text)
-    
-    # Construct Interpretation
-    interpretation = {
-        "status_label": pattern["label"],
-        "simple_explanation": pattern["explanation"],
-        "red_flags": pattern["red_flags"],
-        "care_plan": {
-            "do": pattern["guidance"]["do"],
-            "avoid": pattern["guidance"]["avoid"],
-            "diet_recommended": pattern["guidance"]["diet"],
-            "diet_restricted": pattern["guidance"]["diet_avoid"],
-            "lifestyle": pattern["guidance"]["lifestyle"]
-        },
-        "disclaimer": MEDICAL_DISCLAIMER
+# --- 2. Guidance Engine (Domain-Aware) ---
+GUIDANCE_DATABASE = {
+    "CRITICAL": {
+        "explanation": "The report indicates an extremely serious medical event requiring immediate specialized intervention. It discusses life-threatening complications or urgent surgical needs.",
+        "do": ["Ensure immediate follow-up with the primary surgical or clinical team.", "Verify all medication changes with a specialist.", "Maintain strict monitoring in a clinical setting."],
+        "avoid": ["Do not delay emergency medical care.", "Avoid any strenuous activity.", "Do not ignore new or worsening pain."],
+        "diet": ["Strict adherence to NPO (nothing by mouth) if surgery is pending.", "Follow specific hospital-directed nutrition plan."],
+        "red_flags": ["Sudden worsening of symptoms", "New onset of severe pain", "Loss of consciousness", "Severe bleeding"]
+    },
+    "SERIOUS": {
+        "explanation": "This report highlights significant clinical findings that require active medical management and close monitoring to prevent complications.",
+        "do": ["Adhere strictly to prescribed medication schedules.", "Schedule urgent follow-up with your specialist.", "Monitor vital signs as directed."],
+        "avoid": ["Avoid heavy physical strain.", "Do not skip follow-up appointments.", "Avoid self-medicating with over-the-counter drugs."],
+        "diet": ["Adopt a condition-specific diet (e.g., Low Sodium, DASH, or Diabetic).", "Ensure adequate hydration unless restricted."],
+        "red_flags": ["Worsening shortness of breath", "Chest pain", "High fever that does not break", "Sudden confusion"]
+    },
+    "MODERATE": {
+        "explanation": "The report describes a stable but important medical condition that requires ongoing care and lifestyle adjustments.",
+        "do": ["Keep a daily log of symptoms or labs.", "Review findings with your doctor during the next visit.", "Maintain regular light activity as tolerated."],
+        "avoid": ["Avoid known triggers for your condition.", "Limit habits that worsen your symptoms (e.g., smoking, high salt)."],
+        "diet": ["Focus on a balanced whole-food diet.", "Monitor portion sizes and nutritional labels."],
+        "red_flags": ["New symptoms that interfere with daily life", "Persistent pain", "Unexplained fatigue"]
+    },
+    "NORMAL_WELLNESS": {
+        "explanation": "The report shows mostly routine or stable findings that do not indicate an acute medical crisis at this time.",
+        "do": ["Continue routine health screenings.", "Maintain regular exercise.", "Ensure your vaccinations are up to date."],
+        "avoid": ["Avoid excessive stress or poor sleep.", "Limit processed foods."],
+        "diet": ["Maintain a colorful, balanced diet.", "Drink 8 glasses of water daily."],
+        "red_flags": ["Any sudden deviation from your usual health baseline"]
     }
-    
-    return interpretation
+}
+
+# --- 3. Reasoning Pipeline ---
+
+class ClinicalReasoner:
+    def __init__(self, entities: Dict[str, List[str]], raw_text: str):
+        self.entities = entities
+        self.raw_text = raw_text.upper()
+        self.domain = "GENERAL_MEDICAL"
+        self.severity = "MODERATE"
+        self.findings = []
+        self.interpretation = ""
+
+    def _detect_story_pattern(self) -> Dict[str, Any]:
+        """Stage 2: Classify domain and severity based on the whole narrative."""
+        scores = {k: 0 for k in DOMAINS.keys()}
+        
+        # Check for critical overrides first
+        for domain_id, data in DOMAINS.items():
+            # Narrative cues are weighted heavily
+            for cue in data.get("narrative_cues", []):
+                if cue in self.raw_text:
+                    scores[domain_id] += 50
+            
+            # Critical markers are weighted
+            for marker in data.get("critical_markers", []):
+                if marker in self.raw_text or any(marker in e.upper() for e in self.entities.get("DISEASE", [])):
+                    scores[domain_id] += 30
+                    self.findings.append(marker)
+            
+            # General keywords
+            for kw in data.get("keywords", []):
+                if kw in self.raw_text:
+                    scores[domain_id] += 5
+
+        # Determine dominant domain
+        sorted_domains = sorted(scores.items(), key=lambda x: x[1], reverse=True)
+        top_domain_id, top_score = sorted_domains[0]
+        
+        if top_score < 10:
+            return {"domain_id": "GENERAL_MEDICAL", "severity": "MODERATE", "label": "General Medical Monitoring"}
+        
+        # Determine Severity based on domain and markers
+        domain_data = DOMAINS[top_domain_id]
+        severity = domain_data.get("severity", "MODERATE")
+        
+        # Check severity map within the domain
+        for marker, sev in domain_data.get("severity_map", {}).items():
+            if marker in self.raw_text:
+                severity = sev # Escalates severity
+
+        return {
+            "domain_id": top_domain_id,
+            "severity": severity,
+            "label": domain_data["label"]
+        }
+
+    def _generate_explanation(self, domain_info: Dict[str, Any]) -> str:
+        """Stage 3: Generate a contextual plain-language story."""
+        label = domain_info["label"]
+        severity = domain_info["severity"]
+        
+        if severity == "CRITICAL":
+            return (
+                f"This report describes a critical {label.lower()} event. "
+                "The findings indicate a major medical emergency, such as a rupture or severe complication, "
+                "that required urgent specialist intervention. The focus of the report is on life-saving measures "
+                "and acute hospital management."
+            )
+        elif severity == "SERIOUS":
+            return (
+                f"The report highlights a serious {label.lower()} concern. "
+                "There are significant findings, such as acute inflammation or cardiac strain, "
+                "that require active medical treatment and careful monitoring by your healthcare team."
+            )
+        else:
+            return (
+                f"This report appears to focus on {label.lower()}. "
+                "It describes important findings that need to be managed, but they do not appear "
+                "to represent an immediate medical crisis based on the provided text."
+            )
+
+    def analyze(self) -> Dict[str, Any]:
+        """Execute the full reasoning pipeline."""
+        # 1. Classify the 'Story'
+        domain_info = self._detect_story_pattern()
+        self.domain = domain_info["domain_id"]
+        self.severity = domain_info["severity"]
+        
+        # 2. Generate Explanation
+        self.interpretation = self._generate_explanation(domain_info)
+        
+        # 3. Fetch Guidance
+        guidance = GUIDANCE_DATABASE.get(self.severity, GUIDANCE_DATABASE["MODERATE"])
+        
+        # 4. Construct Final Output
+        return {
+            "main_concern": domain_info["label"],
+            "severity_level": self.severity,
+            "what_this_means": self.interpretation,
+            "key_highlights": sorted(list(set(self.findings))),
+            "care_plan": {
+                "do": guidance["do"],
+                "avoid": guidance["avoid"],
+                "diet": guidance["diet"],
+                "red_flags": guidance["red_flags"]
+            },
+            "disclaimer": MEDICAL_DISCLAIMER
+        }
+
+def generate_proactive_intelligence(entities: Dict[str, List[str]], raw_text: str) -> Dict[str, Any]:
+    """External entry point for the Clinical Reasoning Engine."""
+    reasoner = ClinicalReasoner(entities, raw_text)
+    return reasoner.analyze()

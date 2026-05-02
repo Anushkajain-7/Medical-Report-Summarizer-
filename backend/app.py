@@ -1,15 +1,17 @@
 """
 Clinical Intelligence Platform - FastAPI Backend
-Intelligent medical report interpreter with proactive clinical pattern analysis.
+Intelligent medical report interpreter with narrative-aware clinical reasoning.
 """
 
 import os
 import sys
 import time
 import asyncio
+import requests
 
 from dotenv import load_dotenv
-load_dotenv()
+# Explicitly find .env in the current directory (backend/)
+load_dotenv(os.path.join(os.path.dirname(__file__), '.env'))
 
 from fastapi import FastAPI, UploadFile, File, Form, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -23,12 +25,12 @@ from utils.file_extractor import extract_text
 from utils.rag_chunker import prepare_for_summarization
 from pipeline.bart_summarizer import summarize_with_bart, summarize_chunks_with_bart
 from pipeline.clinical_ner import extract_clinical_entities
-from pipeline.clinical_recommendations import generate_intelligent_interpretation, MEDICAL_DISCLAIMER
+from pipeline.clinical_recommendations import generate_proactive_intelligence, MEDICAL_DISCLAIMER
 
 app = FastAPI(
-    title="Clinical Intelligence Assistant",
-    description="Proactive medical report interpreter for patient empowerment.",
-    version="4.0.0",
+    title="Clinical Reasoning Assistant",
+    description="Advanced narrative-aware medical report interpreter.",
+    version="5.0.0",
 )
 
 app.add_middleware(
@@ -39,12 +41,35 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# --- State ---
+api_token_valid = None
+
+@app.on_event("startup")
+async def startup_event():
+    """Verify HF_API_TOKEN on startup."""
+    global api_token_valid
+    token = os.getenv("HF_API_TOKEN", "").strip()
+    
+    if not token or "PASTE" in token:
+        api_token_valid = False
+        return
+
+    try:
+        res = requests.get(
+            "https://huggingface.co/api/whoami-v2",
+            headers={"Authorization": f"Bearer {token}"},
+            timeout=10
+        )
+        api_token_valid = (res.status_code == 200)
+    except Exception:
+        api_token_valid = None
+
 # --- Models ---
 
 class AnalysisResponse(BaseModel):
     raw_text: str
-    interpretation: Dict[str, Any]
     technical_summary: str
+    clinical_intelligence: Dict[str, Any]
     findings: Dict[str, List[str]]
     meta: Dict[str, Any]
 
@@ -52,7 +77,11 @@ class AnalysisResponse(BaseModel):
 
 @app.get("/health")
 async def health_check():
-    return {"status": "active", "intelligence_mode": "proactive_inference", "version": "4.0.0"}
+    return {
+        "status": "active", 
+        "engine_version": "5.0.0",
+        "api_token_status": "valid" if api_token_valid else "invalid" if api_token_valid == False else "unknown"
+    }
 
 @app.post("/analyze", response_model=AnalysisResponse)
 async def analyze_report(
@@ -60,11 +89,11 @@ async def analyze_report(
     text: Optional[str] = Form(None),
 ):
     """
-    Intelligent analysis pipeline with clinical pattern inference.
+    Multi-stage clinical reasoning pipeline.
     """
     start_time = time.time()
 
-    # 1. Ingest Text
+    # 1. Ingest
     raw_text = ""
     if file and file.filename:
         try:
@@ -80,24 +109,22 @@ async def analyze_report(
     if len(raw_text) < 20:
         raise HTTPException(status_code=400, detail="Document content is too brief for analysis.")
 
-    # 2. Extract Entities (BioClinicalBERT)
-    # We do this first now because the inference engine depends on it
+    # 2. Extract Entities (Stage 1)
     def sync_ner():
-        return extract_clinical_entities(raw_text[:4000]) # Scan more text for better context
+        return extract_clinical_entities(raw_text[:4000])
     
     entities = await asyncio.to_thread(sync_ner)
 
-    # 3. Clinical Inference & Interpretation
-    # This layer analyzes the entities and text to find patterns (Infection, Cardiac, etc.)
-    interpretation = await asyncio.to_thread(generate_intelligent_interpretation, entities, raw_text)
+    # 3. Clinical Reasoning (Stage 2-5)
+    # This engine handles domain, severity, and priority overrides
+    intelligence = await asyncio.to_thread(generate_proactive_intelligence, entities, raw_text)
 
-    # 4. Technical Summarization (BART)
-    # We keep this as a secondary 'professional' summary
+    # 4. Professional Summarization
     chunks = prepare_for_summarization(raw_text, max_input_length=3000)
     def sync_sum():
         if len(chunks) == 1:
-            return summarize_with_bart(chunks[0], max_length=300, min_length=100)
-        return summarize_chunks_with_bart(chunks, max_length=300)
+            return summarize_with_bart(chunks[0], max_length=350, min_length=150)
+        return summarize_chunks_with_bart(chunks, max_length=350)
 
     summary_result = await asyncio.to_thread(sync_sum)
     technical_summary = summary_result["summary"]
@@ -106,8 +133,8 @@ async def analyze_report(
 
     return {
         "raw_text": raw_text,
-        "interpretation": interpretation,
         "technical_summary": technical_summary,
+        "clinical_intelligence": intelligence,
         "findings": {
             "Medical Conditions": entities.get("DISEASE", []),
             "Medications": entities.get("DRUG", []),
@@ -116,8 +143,9 @@ async def analyze_report(
         },
         "meta": {
             "processing_time": processing_time,
-            "pattern_detected": interpretation["status_label"],
-            "input_length": len(raw_text)
+            "engine": "Clinical Intelligence v5.0",
+            "domain": intelligence["main_concern"],
+            "severity": intelligence["severity_level"]
         }
     }
 

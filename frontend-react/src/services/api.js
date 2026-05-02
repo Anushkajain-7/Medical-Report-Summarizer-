@@ -1,5 +1,8 @@
 const API_BASE = "http://localhost:8000";
 
+/**
+ * Verifies system connectivity and backend health.
+ */
 export const checkHealth = async () => {
     try {
         const res = await fetch(`${API_BASE}/health`);
@@ -9,28 +12,19 @@ export const checkHealth = async () => {
     }
 };
 
-export const fetchSampleReports = async () => {
-    try {
-        const res = await fetch(`${API_BASE}/sample-reports`);
-        if (!res.ok) throw new Error("Failed to fetch sample reports");
-        return await res.json();
-    } catch (err) {
-        console.error(err);
-        return { reports: [] };
-    }
-};
-
-export const analyzeReport = async (file, text, maxLength = 250, minLength = 50) => {
+/**
+ * Main analysis orchestration. Sends medical reports (file or text) 
+ * for clinical pattern inference and interpretation.
+ */
+export const analyzeReport = async (file, text) => {
     const formData = new FormData();
     if (file) {
         formData.append("file", file);
     } else if (text) {
         formData.append("text", text);
     } else {
-        throw new Error("Provide either a file or text input.");
+        throw new Error("Please provide a clinical document to begin.");
     }
-    formData.append("max_length", maxLength);
-    formData.append("min_length", minLength);
 
     const res = await fetch(`${API_BASE}/analyze`, {
         method: "POST",
@@ -39,49 +33,11 @@ export const analyzeReport = async (file, text, maxLength = 250, minLength = 50)
 
     if (!res.ok) {
         const err = await res.json().catch(() => ({}));
-        throw new Error(err.detail || "Analysis failed.");
+        // Handle common backend errors
+        if (res.status === 401) throw new Error("Authentication failed. Please check your HF_API_TOKEN in the backend .env file.");
+        if (res.status === 400) throw new Error(err.detail || "The document could not be processed.");
+        throw new Error(err.detail || "The intelligence engine encountered an error.");
     }
-    return await res.json();
-};
-
-export const summarizeText = async (text, maxLength = 250, minLength = 50) => {
-    const res = await fetch(`${API_BASE}/summarize`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text, max_length: maxLength, min_length: minLength }),
-    });
-
-    if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        throw new Error(err.detail || "Summarization failed.");
-    }
-    return await res.json();
-};
-
-export const extractEntities = async (text) => {
-    const res = await fetch(`${API_BASE}/ner`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text }),
-    });
-
-    if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        throw new Error(err.detail || "NER extraction failed.");
-    }
-    return await res.json();
-};
-
-export const computeRouge = async (reference, hypothesis) => {
-    const res = await fetch(`${API_BASE}/rouge`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ reference, hypothesis }),
-    });
-
-    if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        throw new Error(err.detail || "ROUGE evaluation failed.");
-    }
+    
     return await res.json();
 };
